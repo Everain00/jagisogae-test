@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>임연우 | 자기소개와 목표</title>
 
-    <!-- D-day 설정 -->
+    <!-- ===== D-day 설정: 날짜와 이름을 여기서 변경하세요! ===== -->
     <script>
         const TARGET_DATE = "2027-11-18";
         const TARGET_NAME = "수능까지";
@@ -23,26 +22,21 @@
             --blue: #385766;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
-        html {
-            background: var(--paper);
-        }
+        html { background: var(--paper); }
 
         body {
             margin: 0;
             min-height: 100vh;
             padding: 26px 14px 54px;
-            font-family: "Courier New", Courier, monospace;
+            font-family: Arial, "Malgun Gothic", "맑은 고딕", sans-serif;
             font-weight: 700;
             color: var(--ink);
             background: var(--paper);
             overflow-x: hidden;
         }
 
-        /* 장식 라벨 */
         body::before {
             content: "MAKE IT HAPPEN!";
             position: absolute;
@@ -57,7 +51,7 @@
             transform: rotate(7deg);
         }
 
-        /* 그레인 텍스처 */
+        /* 은은한 인쇄용 그레인 텍스처: 색과 레이아웃은 그대로 유지 */
         body::after {
             content: "";
             position: fixed;
@@ -69,7 +63,6 @@
             background-size: 180px 180px;
         }
 
-        /* 자기소개 영역 */
         .profile-container {
             position: relative;
             z-index: 1;
@@ -81,7 +74,6 @@
             align-items: flex-start;
         }
 
-        /* D-day */
         .dday-box {
             position: relative;
             z-index: 3;
@@ -122,7 +114,6 @@
             font-weight: 900;
         }
 
-        /* 자기소개 카드 */
         .card {
             position: relative;
             z-index: 2;
@@ -183,7 +174,6 @@
             word-break: keep-all;
         }
 
-        /* 관심사 태그 */
         .favorites {
             display: flex;
             flex-wrap: wrap;
@@ -201,17 +191,9 @@
             transform: rotate(-1deg);
         }
 
-        .tag:nth-child(2) {
-            background: var(--pink);
-            transform: rotate(2deg) translateY(5px);
-        }
+        .tag:nth-child(2) { background: var(--pink); transform: rotate(2deg) translateY(5px); }
+        .tag:nth-child(3) { background: var(--purple); transform: rotate(-3deg) translateY(-3px); }
 
-        .tag:nth-child(3) {
-            background: var(--purple);
-            transform: rotate(-3deg) translateY(-3px);
-        }
-
-        /* 깃허브 버튼 */
         .github-button {
             display: inline-block;
             min-width: 180px;
@@ -232,11 +214,8 @@
             transform: translate(4px, 4px);
         }
 
-        .github-button:active {
-            transform: translate(6px, 6px);
-        }
+        .github-button:active { transform: translate(6px, 6px); }
 
-        /* 만다라트 영역 */
         .mandalart-section {
             position: relative;
             z-index: 1;
@@ -283,7 +262,6 @@
             font-size: 12px;
         }
 
-        /* 3×3 목표판 */
         .mandalart-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -316,40 +294,13 @@
             transition: transform .12s, background .12s;
         }
 
-        /* 칸마다 살짝씩 다른 기울기 */
-        .goal-cell:nth-child(3n + 1) {
-            transform: rotate(-1deg) translateY(4px);
-        }
-
-        .goal-cell:nth-child(3n + 2) {
-            transform: rotate(1.5deg) translateY(-5px);
-        }
-
-        .goal-cell:nth-child(3n) {
-            transform: rotate(-.5deg) translateY(2px);
-        }
-
-        /* 조화로운 색상 팔레트 */
-        .goal-cell:nth-child(1),
-        .goal-cell:nth-child(5),
-        .goal-cell:nth-child(9) {
-            background: #e5b6a7;
-        }
-
-        .goal-cell:nth-child(2),
-        .goal-cell:nth-child(7) {
-            background: #f0dca7;
-        }
-
-        .goal-cell:nth-child(3),
-        .goal-cell:nth-child(6) {
-            background: #d9cbbb;
-        }
-
-        .goal-cell:nth-child(4),
-        .goal-cell:nth-child(8) {
-            background: #c6d0bf;
-        }
+        .goal-cell:nth-child(3n + 1) { transform: rotate(-1deg) translateY(4px); }
+        .goal-cell:nth-child(3n + 2) { transform: rotate(1.5deg) translateY(-5px); }
+        .goal-cell:nth-child(3n) { transform: rotate(-.5deg) translateY(2px); }
+        .goal-cell:nth-child(1), .goal-cell:nth-child(5), .goal-cell:nth-child(9) { background: #e5b6a7; }
+        .goal-cell:nth-child(2), .goal-cell:nth-child(7) { background: #f0dca7; }
+        .goal-cell:nth-child(3), .goal-cell:nth-child(6) { background: #d9cbbb; }
+        .goal-cell:nth-child(4), .goal-cell:nth-child(8) { background: #c6d0bf; }
 
         .goal-cell:hover {
             background: var(--paper);
@@ -362,7 +313,6 @@
             background: var(--yellow);
         }
 
-        /* 가운데 핵심 목표 */
         .goal-cell.center {
             z-index: 2;
             background: var(--blue);
@@ -373,12 +323,8 @@
         }
 
         .goal-cell.center:hover,
-        .goal-cell.center:focus {
-            background: var(--ink);
-            color: var(--yellow);
-        }
+        .goal-cell.center:focus { background: var(--ink); color: var(--yellow); }
 
-        /* 자동 저장 안내 */
         .mandalart-note {
             width: fit-content;
             max-width: 95%;
@@ -393,78 +339,27 @@
             transform: rotate(-1deg);
         }
 
-        /* 모바일 화면 */
         @media (max-width: 520px) {
-            body {
-                padding: 30px 10px 38px;
-            }
-
-            body::before {
-                top: 7px;
-                right: -18px;
-                font-size: 10px;
-            }
-
-            .profile-container {
-                margin-top: 32px;
-                margin-bottom: 42px;
-            }
-
-            .dday-box {
-                width: 88%;
-                margin-left: 2%;
-                padding: 18px 14px;
-            }
-
-            .card {
-                width: 94%;
-                padding: 44px 18px 24px;
-            }
-
-            .emoji {
-                font-size: 34px;
-            }
-
-            .mandalart-header {
-                margin-left: 3%;
-            }
-
-            .mandalart-grid {
-                gap: 7px;
-                padding: 8px 2px 10px;
-            }
-
-            .goal-cell {
-                border-width: 1.5px;
-                padding: 4px;
-                font-size: clamp(10px, 2.8vw, 13px);
-            }
-
-            .goal-cell.center {
-                border-width: 2px;
-            }
+            body { padding: 30px 10px 38px; }
+            body::before { top: 7px; right: -18px; font-size: 10px; }
+            .profile-container { margin-top: 32px; margin-bottom: 42px; }
+            .dday-box { width: 88%; margin-left: 2%; padding: 18px 14px; }
+            .card { width: 94%; padding: 44px 18px 24px; }
+            .emoji { font-size: 34px; }
+            .mandalart-header { margin-left: 3%; }
+            .mandalart-grid { gap: 7px; padding: 8px 2px 10px; }
+            .goal-cell { border-width: 1.5px; padding: 4px; font-size: clamp(10px, 2.8vw, 13px); }
+            .goal-cell.center { border-width: 2px; }
         }
 
         @media (max-width: 360px) {
-            .mandalart-grid {
-                gap: 5px;
-            }
-
-            .goal-cell {
-                font-size: 10px;
-            }
-
-            .dday-number {
-                font-size: 46px;
-            }
+            .mandalart-grid { gap: 5px; }
+            .goal-cell { font-size: 10px; }
+            .dday-number { font-size: 46px; }
         }
 
-        /* 애니메이션 최소화 설정 지원 */
         @media (prefers-reduced-motion: reduce) {
-            .goal-cell,
-            .github-button {
-                transition: none;
-            }
+            .goal-cell, .github-button { transition: none; }
         }
     </style>
 </head>
@@ -481,9 +376,7 @@
             <div class="emoji" aria-label="눈 내리는 날">🌨️</div>
 
             <h1>임연우</h1>
-            <p class="intro">
-                겨울과 음악을 좋아하는 고등학교 2학년입니다
-            </p>
+            <p class="intro">겨울과 음악을 좋아하는 고등학교 2학년입니다</p>
 
             <div class="favorites">
                 <span class="tag">📚 책</span>
@@ -491,7 +384,7 @@
                 <span class="tag">❄️ 눈</span>
             </div>
 
-            <!-- 실제 깃허브 프로필 주소로 변경 가능 -->
+            <!-- 실제 깃허브 프로필 주소로 바꿀 수 있습니다. -->
             <a
                 class="github-button"
                 href="https://github.com/"
@@ -505,53 +398,24 @@
     <section class="mandalart-section">
         <header class="mandalart-header">
             <h2>나의 목표</h2>
-            <p class="mandalart-hint">
-                칸을 눌러서 고칠 수 있어요
-            </p>
+            <p class="mandalart-hint">칸을 눌러서 고칠 수 있어요</p>
         </header>
 
         <div class="mandalart-grid" aria-label="3x3 만다라트 목표판">
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 1"
-                 spellcheck="false">매일 30분 영어 듣기</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 1" spellcheck="false">매일 30분 영어 듣기</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 2" spellcheck="false">수학 오답노트</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 3" spellcheck="false">주 3회 운동</div>
 
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 2"
-                 spellcheck="false">수학 오답노트</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 4" spellcheck="false">독서 월 2권</div>
+            <div class="goal-cell center" contenteditable="true" role="textbox" aria-label="중심 목표" spellcheck="false">해양생물학과 진학</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 5" spellcheck="false">과학 동아리 발표</div>
 
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 3"
-                 spellcheck="false">주 3회 운동</div>
-
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 4"
-                 spellcheck="false">독서 월 2권</div>
-
-            <div class="goal-cell center" contenteditable="true"
-                 role="textbox" aria-label="중심 목표"
-                 spellcheck="false">해양생물학과 진학</div>
-
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 5"
-                 spellcheck="false">과학 동아리 발표</div>
-
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 6"
-                 spellcheck="false">7시간 수면</div>
-
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 7"
-                 spellcheck="false">봉사활동 20시간</div>
-
-            <div class="goal-cell" contenteditable="true"
-                 role="textbox" aria-label="세부 목표 8"
-                 spellcheck="false">코딩 포트폴리오</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 6" spellcheck="false">7시간 수면</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 7" spellcheck="false">봉사활동 20시간</div>
+            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 8" spellcheck="false">코딩 포트폴리오</div>
         </div>
 
-        <p class="mandalart-note">
-            수정한 내용은 자동으로 저장돼요.
-            같은 브라우저에서 다시 열어도 유지됩니다.
-        </p>
+        <p class="mandalart-note">수정한 내용은 자동으로 저장돼요. 같은 브라우저에서 다시 열어도 유지됩니다.</p>
     </section>
 
     <script>
@@ -559,16 +423,12 @@
         function updateDday() {
             const today = new Date();
             const target = new Date(TARGET_DATE + "T00:00:00");
-
             today.setHours(0, 0, 0, 0);
 
             const difference = target.getTime() - today.getTime();
-            const days = Math.ceil(
-                difference / (1000 * 60 * 60 * 24)
-            );
+            const days = Math.ceil(difference / (1000 * 60 * 60 * 24));
 
             let display;
-
             if (days > 0) {
                 display = `D-${days}`;
             } else if (days === 0) {
@@ -583,56 +443,36 @@
 
         updateDday();
 
-        // 만다라트 목표 자동 저장
+        // 만다라트 목표를 브라우저에 자동 저장
         const goalCells = document.querySelectorAll(".goal-cell");
         const STORAGE_KEY = "mandalart-goals-v1";
 
-        // 저장된 목표 불러오기
+        // 저장된 목표가 있으면 불러오기
         try {
-            const savedGoals = JSON.parse(
-                localStorage.getItem(STORAGE_KEY)
-            );
-
-            if (
-                Array.isArray(savedGoals) &&
-                savedGoals.length === goalCells.length
-            ) {
+            const savedGoals = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (Array.isArray(savedGoals) && savedGoals.length === goalCells.length) {
                 goalCells.forEach((cell, index) => {
                     cell.textContent = savedGoals[index];
                 });
             }
         } catch (error) {
-            console.warn(
-                "저장된 목표를 불러오지 못했습니다.",
-                error
-            );
+            console.warn("저장된 목표를 불러오지 못했습니다.", error);
         }
 
-        // 목표가 바뀔 때마다 저장
+        // 칸의 글자가 바뀔 때마다 저장
         function saveGoals() {
-            const goals = Array.from(
-                goalCells,
-                cell => cell.innerText.trim()
-            );
-
+            const goals = Array.from(goalCells, cell => cell.innerText.trim());
             try {
-                localStorage.setItem(
-                    STORAGE_KEY,
-                    JSON.stringify(goals)
-                );
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
             } catch (error) {
-                console.warn(
-                    "목표를 저장하지 못했습니다.",
-                    error
-                );
+                console.warn("목표를 저장하지 못했습니다.", error);
             }
         }
 
         goalCells.forEach(cell => {
             cell.addEventListener("input", saveGoals);
-
             cell.addEventListener("keydown", event => {
-                // Enter 키를 누르면 줄바꿈 대신 편집 종료
+                // Enter 키로 줄바꿈하지 않고 편집을 마칩니다.
                 if (event.key === "Enter") {
                     event.preventDefault();
                     cell.blur();
