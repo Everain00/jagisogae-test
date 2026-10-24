@@ -1,0 +1,645 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>임연우 | 자기소개와 목표</title>
+
+    <!-- D-day 설정 -->
+    <script>
+        const TARGET_DATE = "2027-11-18";
+        const TARGET_NAME = "수능까지";
+    </script>
+
+    <style>
+        :root {
+            --ink: #292b28;
+            --paper: #f7f4ec;
+            --peri: #b8c5b0;
+            --purple: #d9cbbb;
+            --yellow: #f0d58a;
+            --pink: #d99480;
+            --blue: #385766;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            background: var(--paper);
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 26px 14px 54px;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: 700;
+            color: var(--ink);
+            background: var(--paper);
+            overflow-x: hidden;
+        }
+
+        /* 장식 라벨 */
+        body::before {
+            content: "MAKE IT HAPPEN!";
+            position: absolute;
+            top: 24px;
+            right: -18px;
+            z-index: 0;
+            padding: 9px 16px;
+            border: 1.5px solid var(--ink);
+            background: var(--yellow);
+            font-size: 13px;
+            letter-spacing: 1px;
+            transform: rotate(7deg);
+        }
+
+        /* 그레인 텍스처 */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            pointer-events: none;
+            opacity: .13;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+            background-size: 180px 180px;
+        }
+
+        /* 자기소개 영역 */
+        .profile-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 760px;
+            margin: 22px auto 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* D-day */
+        .dday-box {
+            position: relative;
+            z-index: 3;
+            width: min(84%, 500px);
+            padding: 22px 20px 20px;
+            margin: 0 0 -22px 8%;
+            border: 1.5px solid var(--ink);
+            background: var(--peri);
+            text-align: left;
+            transform: rotate(-2deg);
+        }
+
+        .dday-box::before {
+            content: "COUNTDOWN / 01";
+            display: inline-block;
+            margin-bottom: 8px;
+            padding: 4px 7px;
+            border: 1.5px solid var(--ink);
+            background: var(--yellow);
+            font-size: 11px;
+            letter-spacing: .5px;
+        }
+
+        .dday-number {
+            margin: 0;
+            font-size: clamp(48px, 12vw, 72px);
+            font-weight: 900;
+            letter-spacing: -3px;
+            line-height: 1;
+        }
+
+        .dday-label {
+            margin: 10px 0 0;
+            padding-top: 8px;
+            border-top: 1.5px solid var(--ink);
+            font-size: 14px;
+            color: var(--ink);
+            font-weight: 900;
+        }
+
+        /* 자기소개 카드 */
+        .card {
+            position: relative;
+            z-index: 2;
+            width: min(92%, 540px);
+            align-self: flex-end;
+            padding: 48px 28px 30px;
+            border: 1.5px solid var(--ink);
+            background: var(--paper);
+            text-align: left;
+            transform: rotate(1.2deg);
+        }
+
+        .card::after {
+            content: "ABOUT ME";
+            position: absolute;
+            right: -12px;
+            top: 20px;
+            padding: 7px 10px;
+            border: 1.5px solid var(--ink);
+            background: var(--pink);
+            font-size: 12px;
+            transform: rotate(8deg);
+        }
+
+        .emoji {
+            display: inline-block;
+            margin: 0 0 12px -5px;
+            padding: 2px 10px;
+            border: 1.5px solid var(--ink);
+            background: var(--yellow);
+            font-size: 42px;
+            line-height: 1.2;
+            transform: rotate(-5deg);
+        }
+
+        h1 {
+            display: table;
+            margin: 0 0 14px -8px;
+            padding: 5px 10px;
+            border: 1.5px solid var(--ink);
+            background: var(--peri);
+            font-size: clamp(26px, 6vw, 34px);
+            font-weight: 900;
+            letter-spacing: 0;
+            line-height: 1.1;
+            overflow-wrap: anywhere;
+        }
+
+        .intro {
+            max-width: 38em;
+            margin: 0 0 18px;
+            padding: 10px;
+            border: 1.5px solid var(--ink);
+            background: var(--paper);
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--ink);
+            word-break: keep-all;
+        }
+
+        /* 관심사 태그 */
+        .favorites {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 8px;
+            margin: 22px 0 24px;
+        }
+
+        .tag {
+            padding: 9px 12px;
+            border: 1.5px solid var(--ink);
+            background: var(--yellow);
+            color: var(--ink);
+            font-size: 13px;
+            transform: rotate(-1deg);
+        }
+
+        .tag:nth-child(2) {
+            background: var(--pink);
+            transform: rotate(2deg) translateY(5px);
+        }
+
+        .tag:nth-child(3) {
+            background: var(--purple);
+            transform: rotate(-3deg) translateY(-3px);
+        }
+
+        /* 깃허브 버튼 */
+        .github-button {
+            display: inline-block;
+            min-width: 180px;
+            padding: 13px 16px;
+            border: 1.5px solid var(--ink);
+            background: var(--blue);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 900;
+            text-align: center;
+            transition: transform .12s;
+        }
+
+        .github-button:hover {
+            background: var(--yellow);
+            color: var(--ink);
+            transform: translate(4px, 4px);
+        }
+
+        .github-button:active {
+            transform: translate(6px, 6px);
+        }
+
+        /* 만다라트 영역 */
+        .mandalart-section {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .mandalart-header {
+            position: relative;
+            width: fit-content;
+            max-width: 95%;
+            margin: 0 0 26px 7%;
+            padding: 12px 16px 10px;
+            border: 1.5px solid var(--ink);
+            background: var(--yellow);
+            text-align: left;
+            transform: rotate(2deg);
+        }
+
+        .mandalart-header::after {
+            content: "GOALS / 09 BOXES";
+            position: absolute;
+            left: 70%;
+            bottom: -17px;
+            white-space: nowrap;
+            padding: 4px 7px;
+            border: 1.5px solid var(--ink);
+            background: var(--pink);
+            font-size: 10px;
+            transform: rotate(-5deg);
+        }
+
+        .mandalart-header h2 {
+            margin: 0 0 7px;
+            font-size: clamp(27px, 6vw, 39px);
+            letter-spacing: 0;
+            line-height: 1.05;
+        }
+
+        .mandalart-hint {
+            margin: 0;
+            color: var(--ink);
+            font-size: 12px;
+        }
+
+        /* 3×3 목표판 */
+        .mandalart-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            width: 100%;
+            padding: 10px 8px 14px;
+        }
+
+        .goal-cell {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(5px, 2vw, 14px);
+            border: 1.5px solid var(--ink);
+            border-radius: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: inherit;
+            font-size: clamp(11px, 2.7vw, 16px);
+            font-weight: 700;
+            line-height: 1.45;
+            text-align: center;
+            overflow-wrap: anywhere;
+            word-break: keep-all;
+            cursor: text;
+            outline: none;
+            transition: transform .12s, background .12s;
+        }
+
+        /* 칸마다 살짝씩 다른 기울기 */
+        .goal-cell:nth-child(3n + 1) {
+            transform: rotate(-1deg) translateY(4px);
+        }
+
+        .goal-cell:nth-child(3n + 2) {
+            transform: rotate(1.5deg) translateY(-5px);
+        }
+
+        .goal-cell:nth-child(3n) {
+            transform: rotate(-.5deg) translateY(2px);
+        }
+
+        /* 조화로운 색상 팔레트 */
+        .goal-cell:nth-child(1),
+        .goal-cell:nth-child(5),
+        .goal-cell:nth-child(9) {
+            background: #e5b6a7;
+        }
+
+        .goal-cell:nth-child(2),
+        .goal-cell:nth-child(7) {
+            background: #f0dca7;
+        }
+
+        .goal-cell:nth-child(3),
+        .goal-cell:nth-child(6) {
+            background: #d9cbbb;
+        }
+
+        .goal-cell:nth-child(4),
+        .goal-cell:nth-child(8) {
+            background: #c6d0bf;
+        }
+
+        .goal-cell:hover {
+            background: var(--paper);
+            transform: rotate(0) translate(3px, 3px);
+        }
+
+        .goal-cell:focus {
+            outline: 2px solid var(--blue);
+            outline-offset: 2px;
+            background: var(--yellow);
+        }
+
+        /* 가운데 핵심 목표 */
+        .goal-cell.center {
+            z-index: 2;
+            background: var(--blue);
+            color: #ffffff;
+            border: 2.5px solid var(--ink);
+            font-weight: 900;
+            transform: rotate(2deg) scale(1.04);
+        }
+
+        .goal-cell.center:hover,
+        .goal-cell.center:focus {
+            background: var(--ink);
+            color: var(--yellow);
+        }
+
+        /* 자동 저장 안내 */
+        .mandalart-note {
+            width: fit-content;
+            max-width: 95%;
+            margin: 18px 0 0 auto;
+            padding: 9px 12px;
+            border: 1.5px solid var(--ink);
+            background: var(--pink);
+            text-align: left;
+            color: var(--ink);
+            font-size: 11px;
+            line-height: 1.7;
+            transform: rotate(-1deg);
+        }
+
+        /* 모바일 화면 */
+        @media (max-width: 520px) {
+            body {
+                padding: 30px 10px 38px;
+            }
+
+            body::before {
+                top: 7px;
+                right: -18px;
+                font-size: 10px;
+            }
+
+            .profile-container {
+                margin-top: 32px;
+                margin-bottom: 42px;
+            }
+
+            .dday-box {
+                width: 88%;
+                margin-left: 2%;
+                padding: 18px 14px;
+            }
+
+            .card {
+                width: 94%;
+                padding: 44px 18px 24px;
+            }
+
+            .emoji {
+                font-size: 34px;
+            }
+
+            .mandalart-header {
+                margin-left: 3%;
+            }
+
+            .mandalart-grid {
+                gap: 7px;
+                padding: 8px 2px 10px;
+            }
+
+            .goal-cell {
+                border-width: 1.5px;
+                padding: 4px;
+                font-size: clamp(10px, 2.8vw, 13px);
+            }
+
+            .goal-cell.center {
+                border-width: 2px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .mandalart-grid {
+                gap: 5px;
+            }
+
+            .goal-cell {
+                font-size: 10px;
+            }
+
+            .dday-number {
+                font-size: 46px;
+            }
+        }
+
+        /* 애니메이션 최소화 설정 지원 */
+        @media (prefers-reduced-motion: reduce) {
+            .goal-cell,
+            .github-button {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- D-day와 자기소개 카드 -->
+    <section class="profile-container">
+        <div class="dday-box" aria-label="D-day 카운터">
+            <p class="dday-number" id="dday-number">D-0</p>
+            <p class="dday-label" id="dday-label">수능까지</p>
+        </div>
+
+        <main class="card">
+            <div class="emoji" aria-label="눈 내리는 날">🌨️</div>
+
+            <h1>임연우</h1>
+            <p class="intro">
+                겨울과 음악을 좋아하는 고등학교 2학년입니다
+            </p>
+
+            <div class="favorites">
+                <span class="tag">📚 책</span>
+                <span class="tag">🎧 음악</span>
+                <span class="tag">❄️ 눈</span>
+            </div>
+
+            <!-- 실제 깃허브 프로필 주소로 변경 가능 -->
+            <a
+                class="github-button"
+                href="https://github.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >내 깃허브 ↗</a>
+        </main>
+    </section>
+
+    <!-- 만다라트 목표판 -->
+    <section class="mandalart-section">
+        <header class="mandalart-header">
+            <h2>나의 목표</h2>
+            <p class="mandalart-hint">
+                칸을 눌러서 고칠 수 있어요
+            </p>
+        </header>
+
+        <div class="mandalart-grid" aria-label="3x3 만다라트 목표판">
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 1"
+                 spellcheck="false">매일 30분 영어 듣기</div>
+
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 2"
+                 spellcheck="false">수학 오답노트</div>
+
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 3"
+                 spellcheck="false">주 3회 운동</div>
+
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 4"
+                 spellcheck="false">독서 월 2권</div>
+
+            <div class="goal-cell center" contenteditable="true"
+                 role="textbox" aria-label="중심 목표"
+                 spellcheck="false">해양생물학과 진학</div>
+
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 5"
+                 spellcheck="false">과학 동아리 발표</div>
+
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 6"
+                 spellcheck="false">7시간 수면</div>
+
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 7"
+                 spellcheck="false">봉사활동 20시간</div>
+
+            <div class="goal-cell" contenteditable="true"
+                 role="textbox" aria-label="세부 목표 8"
+                 spellcheck="false">코딩 포트폴리오</div>
+        </div>
+
+        <p class="mandalart-note">
+            수정한 내용은 자동으로 저장돼요.
+            같은 브라우저에서 다시 열어도 유지됩니다.
+        </p>
+    </section>
+
+    <script>
+        // D-day 자동 계산
+        function updateDday() {
+            const today = new Date();
+            const target = new Date(TARGET_DATE + "T00:00:00");
+
+            today.setHours(0, 0, 0, 0);
+
+            const difference = target.getTime() - today.getTime();
+            const days = Math.ceil(
+                difference / (1000 * 60 * 60 * 24)
+            );
+
+            let display;
+
+            if (days > 0) {
+                display = `D-${days}`;
+            } else if (days === 0) {
+                display = "D-DAY";
+            } else {
+                display = `D+${Math.abs(days)}`;
+            }
+
+            document.getElementById("dday-number").textContent = display;
+            document.getElementById("dday-label").textContent = TARGET_NAME;
+        }
+
+        updateDday();
+
+        // 만다라트 목표 자동 저장
+        const goalCells = document.querySelectorAll(".goal-cell");
+        const STORAGE_KEY = "mandalart-goals-v1";
+
+        // 저장된 목표 불러오기
+        try {
+            const savedGoals = JSON.parse(
+                localStorage.getItem(STORAGE_KEY)
+            );
+
+            if (
+                Array.isArray(savedGoals) &&
+                savedGoals.length === goalCells.length
+            ) {
+                goalCells.forEach((cell, index) => {
+                    cell.textContent = savedGoals[index];
+                });
+            }
+        } catch (error) {
+            console.warn(
+                "저장된 목표를 불러오지 못했습니다.",
+                error
+            );
+        }
+
+        // 목표가 바뀔 때마다 저장
+        function saveGoals() {
+            const goals = Array.from(
+                goalCells,
+                cell => cell.innerText.trim()
+            );
+
+            try {
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    JSON.stringify(goals)
+                );
+            } catch (error) {
+                console.warn(
+                    "목표를 저장하지 못했습니다.",
+                    error
+                );
+            }
+        }
+
+        goalCells.forEach(cell => {
+            cell.addEventListener("input", saveGoals);
+
+            cell.addEventListener("keydown", event => {
+                // Enter 키를 누르면 줄바꿈 대신 편집 종료
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    cell.blur();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
