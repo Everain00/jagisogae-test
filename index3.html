@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>임연우 | 자기소개와 목표</title>
 
+    <!-- 웹폰트: 본문은 검은고딕, 주요 제목은 칠칠공 발사체 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+
     <!-- ===== D-day 설정: 날짜와 이름을 여기서 변경하세요! ===== -->
     <script>
         const TARGET_DATE = "2027-11-18";
@@ -12,6 +17,14 @@
     </script>
 
     <style>
+        @font-face {
+            font-family: 'ChilchilgongBalsache';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2505-1@1.0/770Balsa.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --ink: #292b28;
             --paper: #f7f4ec;
@@ -30,7 +43,7 @@
             margin: 0;
             min-height: 100vh;
             padding: 26px 14px 54px;
-            font-family: Arial, "Malgun Gothic", "맑은 고딕", sans-serif;
+            font-family: "Black Han Sans", sans-serif;
             font-weight: 700;
             color: var(--ink);
             background: var(--paper);
@@ -98,6 +111,7 @@
         }
 
         .dday-number {
+            font-family: 'ChilchilgongBalsache', sans-serif;
             margin: 0;
             font-size: clamp(48px, 12vw, 72px);
             font-weight: 900;
@@ -106,6 +120,7 @@
         }
 
         .dday-label {
+            font-family: 'ChilchilgongBalsache', sans-serif;
             margin: 10px 0 0;
             padding-top: 8px;
             border-top: 1.5px solid var(--ink);
@@ -150,6 +165,7 @@
         }
 
         h1 {
+            font-family: 'ChilchilgongBalsache', sans-serif;
             display: table;
             margin: 0 0 14px -8px;
             padding: 5px 10px;
@@ -250,6 +266,7 @@
         }
 
         .mandalart-header h2 {
+            font-family: 'ChilchilgongBalsache', sans-serif;
             margin: 0 0 7px;
             font-size: clamp(27px, 6vw, 39px);
             letter-spacing: 0;
