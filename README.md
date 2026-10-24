@@ -12,39 +12,46 @@
     </script>
 
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --bg: #e6ebf2;
+            --surface: #e6ebf2;
+            --text: #354052;
+            --muted: #7b8798;
+            --accent: #647db5;
+            --shadow-light: #ffffff;
+            --shadow-dark: #c3cad5;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             min-height: 100vh;
-            padding: 24px 12px 40px;
+            padding: 32px 14px 48px;
             font-family: "Malgun Gothic", sans-serif;
-            color: #30384a;
-            background: linear-gradient(135deg, #e8efff, #f7edfa, #e5f5f3);
+            color: var(--text);
+            background: var(--bg);
         }
 
-        /* D-day와 자기소개 카드 */
         .profile-container {
             width: 100%;
             max-width: 360px;
-            margin: 0 auto 36px;
+            margin: 0 auto 42px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* D-day 카운터 */
         .dday-box {
             width: 100%;
-            padding: 24px 20px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #dce6ff, #eadcf7);
-            border-radius: 24px;
-            box-shadow: 0 12px 35px rgba(65, 75, 110, 0.12);
+            padding: 26px 20px;
+            margin-bottom: 22px;
+            background: var(--surface);
+            border-radius: 28px;
+            box-shadow: 9px 9px 18px var(--shadow-dark),
+                        -9px -9px 18px var(--shadow-light);
             text-align: center;
-            color: #30384a;
+            color: var(--text);
         }
 
         .dday-number {
@@ -58,18 +65,18 @@
         .dday-label {
             margin: 8px 0 0;
             font-size: 14px;
-            color: #6674b8;
+            color: var(--accent);
             font-weight: 600;
         }
 
-        /* 자기소개 카드 */
         .card {
             width: 100%;
             padding: 40px 28px;
-            background-color: #ffffff;
-            border-radius: 24px;
+            background: var(--surface);
+            border-radius: 28px;
             text-align: center;
-            box-shadow: 0 12px 35px rgba(65, 75, 110, 0.12);
+            box-shadow: 9px 9px 18px var(--shadow-dark),
+                        -9px -9px 18px var(--shadow-light);
         }
 
         .emoji {
@@ -89,7 +96,7 @@
             margin: 0;
             font-size: 14px;
             line-height: 1.8;
-            color: #7a8293;
+            color: var(--muted);
             word-break: keep-all;
         }
 
@@ -97,37 +104,46 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             margin: 28px 0;
         }
 
         .tag {
-            padding: 9px 16px;
-            background-color: #f0f3ff;
-            color: #6674b8;
+            padding: 10px 16px;
+            background: var(--surface);
+            color: var(--accent);
             border-radius: 999px;
             font-size: 14px;
+            box-shadow: 4px 4px 8px var(--shadow-dark),
+                        -4px -4px 8px var(--shadow-light);
         }
 
         .github-button {
             display: block;
             width: 100%;
             padding: 14px 20px;
-            background-color: #30384a;
-            color: #ffffff;
-            border-radius: 12px;
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 14px;
             text-decoration: none;
             font-size: 15px;
-            font-weight: 600;
-            transition: background-color 0.2s, transform 0.2s;
+            font-weight: 700;
+            box-shadow: 6px 6px 12px var(--shadow-dark),
+                        -6px -6px 12px var(--shadow-light);
+            transition: box-shadow 0.2s, transform 0.2s, color 0.2s;
         }
 
         .github-button:hover {
-            background-color: #4c5873;
-            transform: translateY(-2px);
+            color: var(--accent);
+            transform: translateY(-1px);
         }
 
-        /* 만다라트 영역 */
+        .github-button:active {
+            box-shadow: inset 5px 5px 10px var(--shadow-dark),
+                        inset -5px -5px 10px var(--shadow-light);
+            transform: translateY(0);
+        }
+
         .mandalart-section {
             width: 100%;
             max-width: 720px;
@@ -136,7 +152,7 @@
 
         .mandalart-header {
             text-align: center;
-            margin-bottom: 22px;
+            margin-bottom: 24px;
         }
 
         .mandalart-header h2 {
@@ -147,14 +163,14 @@
 
         .mandalart-hint {
             margin: 0;
-            color: #7a8293;
+            color: var(--muted);
             font-size: 14px;
         }
 
         .mandalart-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 8px;
+            gap: 14px;
             width: 100%;
         }
 
@@ -165,75 +181,173 @@
             align-items: center;
             justify-content: center;
             padding: clamp(5px, 2vw, 14px);
-            border: 1px solid #e2e7f2;
-            border-radius: 16px;
-            background: #ffffff;
-            box-shadow: 0 5px 16px rgba(65, 75, 110, 0.08);
-            color: #39445c;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            background: var(--surface);
+            box-shadow: 7px 7px 14px var(--shadow-dark),
+                        -7px -7px 14px var(--shadow-light);
+            color: #465268;
             font-family: inherit;
             font-size: clamp(11px, 2.7vw, 16px);
-            line-height: 1.45;
+            line-height: 1.5;
             text-align: center;
             overflow-wrap: anywhere;
             word-break: keep-all;
             cursor: text;
             outline: none;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            transition: box-shadow 0.2s, color 0.2s, border-color 0.2s;
         }
 
         .goal-cell:focus {
-            border-color: #8c9ee8;
-            box-shadow: 0 0 0 3px rgba(140, 158, 232, 0.2);
+            border-color: #aab8d6;
+            box-shadow: inset 5px 5px 10px var(--shadow-dark),
+                        inset -5px -5px 10px var(--shadow-light);
         }
 
         .goal-cell.center {
-            background: linear-gradient(145deg, #cddaff, #e6d5f5);
-            border: 2px solid #9aa9e8;
-            color: #303b70;
+            background: #dce4f2;
+            color: #435b91;
             font-weight: 700;
+            box-shadow: inset 5px 5px 10px #bdc7d8,
+                        inset -5px -5px 10px #fbffff;
         }
 
         .goal-cell.center:focus {
-            border-color: #6f80d4;
+            border-color: #8299c7;
         }
 
         .mandalart-note {
-            margin: 16px 0 0;
+            margin: 20px 0 0;
             text-align: center;
-            color: #7a8293;
+            color: var(--muted);
             font-size: 12px;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         @media (max-width: 400px) {
-            body {
-                padding: 16px 8px 32px;
-            }
-
-            .card {
-                padding: 32px 22px;
-            }
-
-            .emoji {
-                font-size: 64px;
-            }
-
-            h1 {
-                font-size: 26px;
-            }
+            body { padding: 20px 10px 36px; }
+            .card { padding: 32px 22px; }
+            .emoji { font-size: 64px; }
+            h1 { font-size: 26px; }
+            .mandalart-grid { gap: 9px; }
         }
 
         @media (max-width: 360px) {
-            .mandalart-grid {
-                gap: 5px;
-            }
-
+            .mandalart-grid { gap: 6px; }
             .goal-cell {
-                border-radius: 10px;
+                border-radius: 14px;
                 padding: 4px;
                 font-size: 11px;
             }
         }
+
+
+        /* Frosted Glassmorphism theme */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.34);
+            --glass-border: rgba(255, 255, 255, 0.62);
+            --text: #27334b;
+            --muted: #5e6a80;
+            --accent: #526bb0;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 12% 12%, rgba(207, 215, 255, .92), transparent 36%),
+                radial-gradient(circle at 88% 18%, rgba(177, 185, 255, .78), transparent 34%),
+                radial-gradient(circle at 70% 88%, rgba(224, 219, 255, .82), transparent 36%),
+                linear-gradient(135deg, #dfe4ff 0%, #c5ccff 48%, #e9e7ff 100%);
+            background-attachment: fixed;
+        }
+
+        .dday-box, .card, .goal-cell {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 12px 36px rgba(45, 60, 100, .13),
+                        inset 0 1px 0 rgba(255, 255, 255, .48);
+            -webkit-backdrop-filter: blur(18px) saturate(150%);
+            backdrop-filter: blur(18px) saturate(150%);
+        }
+
+        .dday-box {
+            border-radius: 26px;
+            background: linear-gradient(135deg, rgba(132, 148, 220, .66), rgba(164, 151, 218, .60));
+            border: 1px solid rgba(255, 255, 255, .76);
+            box-shadow: 0 16px 38px rgba(67, 79, 151, .22),
+                        inset 0 1px 0 rgba(255, 255, 255, .58);
+        }
+
+        .dday-label {
+            color: #394b91;
+        }
+
+        .card {
+            border-radius: 28px;
+            background: rgba(255, 255, 255, .42);
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, .36);
+            border: 1px solid rgba(255, 255, 255, .66);
+            box-shadow: 0 5px 16px rgba(45, 60, 100, .08);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+        }
+
+        .github-button {
+            background: rgba(62, 78, 124, .82);
+            border: 1px solid rgba(255, 255, 255, .38);
+            box-shadow: 0 8px 20px rgba(42, 56, 96, .18);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+        }
+
+        .github-button:hover {
+            background: rgba(75, 95, 151, .92);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(42, 56, 96, .22);
+        }
+
+        .goal-cell {
+            border-radius: 18px;
+            color: #303c56;
+            transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+        }
+
+        .goal-cell:hover {
+            background: rgba(255, 255, 255, .48);
+            box-shadow: 0 15px 32px rgba(45, 60, 100, .16),
+                        inset 0 1px 0 rgba(255, 255, 255, .62);
+            transform: translateY(-2px);
+        }
+
+        .goal-cell:focus {
+            border-color: rgba(104, 130, 207, .72);
+            box-shadow: 0 0 0 3px rgba(140, 158, 232, .2),
+                        0 12px 28px rgba(45, 60, 100, .12);
+        }
+
+        .goal-cell.center {
+            background: linear-gradient(145deg, rgba(130, 149, 224, .70), rgba(169, 151, 218, .66));
+            border: 1px solid rgba(255, 255, 255, .86);
+            color: #26366f;
+            box-shadow: 0 14px 32px rgba(65, 79, 158, .24),
+                        inset 0 1px 0 rgba(255, 255, 255, .72);
+            font-weight: 800;
+        }
+
+        .goal-cell.center:hover {
+            background: linear-gradient(145deg, rgba(119, 139, 218, .78), rgba(157, 139, 211, .74));
+        }
+
+        .goal-cell.center:focus {
+            border-color: rgba(91, 113, 198, .8);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .goal-cell, .github-button { transition: none; }
+        }
+
     </style>
 </head>
 
