@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SUMMIT CLIMBER</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#f5f6f4;color:#222;font-family:Arial,"Noto Sans KR",sans-serif;display:grid;place-items:center;padding:24px}
+.wrap{width:min(960px,100%)}
+header{display:flex;justify-content:space-between;align-items:end;margin:0 0 14px}
+h1{font-size:clamp(22px,4vw,32px);letter-spacing:2px;margin:0;font-weight:800}
+.sub{font-size:12px;color:#777;margin-top:5px}
+.score{font-size:14px;color:#555}.score b{font-size:22px;color:#222;margin-left:8px}
+.gamebox{position:relative;background:#fff;border:1px solid #e3e5e1;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px #2028200b}
+canvas{display:block;width:100%;height:auto;aspect-ratio:900/700}
+.bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap;color:#777;font-size:12px}
+.legend{display:flex;gap:15px;flex-wrap:wrap}.key{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+button{border:0;background:#242824;color:#fff;border-radius:7px;padding:9px 15px;font-weight:700;cursor:pointer}
+button:hover{background:#424942}
+.overlay{position:absolute;inset:0;background:#ffffffdf;display:grid;place-items:center;text-align:center}
+.overlay.hidden{display:none}
+.panel h2{font-size:28px;margin:0 0 8px}.panel p{color:#666;margin:0 0 18px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>SUMMIT CLIMBER</h1><div class="sub">위로 올라갈수록 점수가 높아집니다.</div></div>
+    <div class="score">SCORE <b id="score">0</b></div>
+  </header>
+  <div class="gamebox">
+    <canvas id="game" width="900" height="700"></canvas>
+    <div class="overlay" id="overlay">
+      <div class="panel">
+        <h2 id="message">준비됐나요?</h2>
+        <p id="hint">← → 이동 · ↑ 또는 Space 점프 (길게 누르면 더 높이!)</p>
+        <button id="start">게임 시작</button>
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="legend">
+      <span class="key"><i class="dot" style="background:#343a36"></i>일반 바닥</span>
+      <span class="key"><i class="dot" style="background:#aeb3b0"></i>한 번 밟으면 부서짐</span>
+      <span class="key"><i class="dot" style="background:#e66b4e"></i>움직이는 바닥</span>
+      <span class="key"><i class="dot" style="background:#72a78a"></i>스프링</span>
+    </div>
+    <span>← → 이동 · Ctrl + ← → 빠르게 이동 · ↑ / Space 점프 · R 다시 시작</span>
+  </div>
+</div>
+<script>
+(() => {
+  const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+  const scoreEl=document.getElementById('score'),overlay=document.getElementById('overlay');
+  const startBtn=document.getElementById('start'),message=document.getElementById('message'),hint=document.getElementById('hint');
+  const W=canvas.width,H=canvas.height,keys={};
+  let player,platforms,score,camera,running=false,last=0,jumpHeld=false;
+
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  function makePlatform(y,type='normal',x=rand(30,W-130)){
+    return {x,y,w:100,h:13,type,baseX:x,phase:rand(0,Math.PI*2),broken:false,breakAt:0,gone:false};
+  }
+  function nextPlatformX(previous){
+  const shift = rand(-105, 105);
+  return Math.max(20, Math.min(W-120, previous.x + shift));
+}
+  function reset(){
+    score=0;camera=0;
+    player={x:W/2-16,y:H-100,w:32,h:38,vx:0,vy:0,onGround:false};
+    platforms=[makePlatform(H-45,'normal',W/2-50)];
+    let y=H-145;
+    while(y>-H){
+      const r=Math.random(),type=r<.15?'spring':r<.36?'break':'normal';
+      platforms.push(makePlatform(y,type));y-=type==='spring'?rand(150,180):rand(105,135);
+    }
+    scoreEl.textContent='0';
+  }
+  function start(){
+    reset();running=true;jumpHeld=false;
+    overlay.classList.add('hidden');last=performance.now();requestAnimationFrame(loop);
+  }
+  function end(){
+    running=false;message.textContent='GAME OVER';hint.textContent=`최종 점수: ${score}점`;
+    startBtn.textContent='다시 시작';overlay.classList.remove('hidden');
+  }
+  function update(dt){
+    const step=Math.min(dt/16.67,2);
+    // Ctrl 키를 누른 상태에서는 가속도와 최고 속도를 높인다.
+    const sprint = !!keys.Control;
+    const acceleration = sprint ? .85 : .55;
+    const maxSpeed = sprint ? 11 : 7;
+
+    if(keys.ArrowLeft||keys.a)player.vx-=acceleration*step;
+    if(keys.ArrowRight||keys.d)player.vx+=acceleration*step;
+    player.vx*=Math.pow(.86,step);
+    player.vx=Math.max(-maxSpeed,Math.min(maxSpeed,player.vx));
+    player.x+=player.vx*step;
+    if(player.x < -player.w)player.x=W;
+    if(player.x>W)player.x=-player.w;
+
+    // 점프는 키를 누른 순간 지면에 있을 때만 시작한다.
+    // 공중에 있는 동안에는 새 점프 입력이 점프를 만들지 않는다.
+    if(jumpHeld && player.vy<0){
+      player.vy-=.18*step; // 누르고 있는 동안 상승을 조금 더 유지
+    }
+    player.vy+=.42*step;
+    const oldBottom=player.y+player.h;
+    player.y+=player.vy*step;
+    player.onGround=false;
+
+    for(const p of platforms){
+      if(p.type==='move'&&!p.gone&&!p.broken){
+        p.x=p.baseX+Math.sin(performance.now()/700+p.phase)*75;
+        p.x=Math.max(0,Math.min(W-p.w,p.x));
+      }
+      if(p.type==='break'&&p.broken&&performance.now()>p.breakAt)p.gone=true;
+
+      // 위에서 아래로 내려오며 발판 윗면에 닿을 때만 착지
+      if(!p.gone&&!p.broken&&player.vy>=0&&oldBottom<=p.y+2&&player.y+player.h>=p.y&&player.x+player.w>p.x&&player.x<p.x+p.w){
+        player.y=p.y-player.h;
+        player.vy=0;
+        player.onGround=true;
+if(jumpKey&&!wasDown&&player&&player.onGround&&running){
+  const stoodOn = player.standingPlatform;
+
+  // 부서지는 바닥은 그 위에서 점프할 때만 파괴
+  if(stoodOn && stoodOn.type === 'break'){
+    stoodOn.broken = true;
+    stoodOn.breakAt = performance.now() + 170;
+  }
+
+  player.standingPlatform = null;
+  player.vy = -10.5;
+  player.onGround = false;
+  jumpHeld = true;
+}
+        player.standingPlatform = p;
+
+if(p.type==='spring'){
+  player.vy=-15.5;
+  player.onGround=false;
+  jumpHeld=false;
+  player.standingPlatform=null;
+}
+        if(p.type==='spring'){player.vy=-15.5;player.onGround=false;jumpHeld=false;}
+      }
+    }
+
+    platforms=platforms.filter(p=>!p.gone&&p.y-camera<H+100);
+    const top=H*.38;
+    if(player.y-camera<top)camera=player.y-top;
+
+    const climbed=Math.max(0,Math.floor((H-100-player.y)/10));
+    score=Math.max(score,climbed);scoreEl.textContent=score;
+
+    let minY=Math.min(...platforms.map(p=>p.y));
+    while(minY>camera-120){
+      minY-=rand(108,138);
+      const r=Math.random(),type=r<.16?'spring':r<.39?'break':r<.58?'move':'normal';
+      platforms.push(makePlatform(minY,type));
+    }
+    if(player.y-camera>H+50)end();
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);ctx.fillStyle='#fbfcfa';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='#f0f2ef';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=45){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=45){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    for(const p of platforms){
+      if(p.gone)continue;const y=p.y-camera;if(y<-30||y>H+30)continue;
+      ctx.fillStyle=p.type==='break'?'#aeb3b0':p.type==='move'?'#e66b4e':p.type==='spring'?'#72a78a':'#343a36';
+      ctx.globalAlpha=p.broken?.35:1;ctx.beginPath();ctx.roundRect(p.x,y,p.w,p.h,4);ctx.fill();ctx.globalAlpha=1;
+      if(p.type==='spring'&&!p.broken){ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(p.x+42,y+2);ctx.lineTo(p.x+48,y-7);ctx.lineTo(p.x+54,y+2);ctx.stroke();}
+      if(p.type==='break'&&!p.broken){ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(p.x+48,y+2);ctx.lineTo(p.x+43,y+7);ctx.moveTo(p.x+53,y+2);ctx.lineTo(p.x+48,y+7);ctx.stroke();}
+    }
+    const py=player.y-camera;ctx.fillStyle='#242824';ctx.beginPath();ctx.roundRect(player.x,py,player.w,player.h,8);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(player.x+10,py+13,2.5,0,Math.PI*2);ctx.arc(player.x+22,py+13,2.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#d9ded9';ctx.fillRect(0,H-3,W,3);
+  }
+  function loop(now){if(!running)return;const dt=now-last;last=now;update(dt);draw();if(running)requestAnimationFrame(loop);}
+
+  window.addEventListener('keydown',e=>{
+    if(['ArrowLeft','ArrowRight','ArrowUp',' '].includes(e.key))e.preventDefault();
+    const wasDown=!!keys[e.key];keys[e.key]=true;
+    const jumpKey=e.key==='ArrowUp'||e.key===' '||e.key==='w';
+    if(jumpKey&&!wasDown&&player&&player.onGround&&running){
+      player.vy=-10.5;player.onGround=false;jumpHeld=true;
+    }
+    if(e.key.toLowerCase()==='r')start();
+  });
+  window.addEventListener('keyup',e=>{
+    keys[e.key]=false;
+    if(e.key==='ArrowUp'||e.key===' '||e.key==='w')jumpHeld=false;
+  });
+  startBtn.addEventListener('click',start);
+  reset();draw();
+})();
+</script>
+</body>
+</html>
