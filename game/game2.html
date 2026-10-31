@@ -1,0 +1,717 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>두더지 잡기</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f5edda;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.game {
+    width: 100%;
+    height: 100dvh;
+    max-width: 600px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 20px;
+}
+
+h1 {
+    font-size: 32px;
+    color: #61452f;
+    margin-top: 15px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #9b8062;
+    margin-bottom: 25px;
+}
+
+/* 점수판 */
+
+.score-board {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.score-box {
+    flex: 1;
+    background: white;
+    border-radius: 15px;
+    padding: 13px 5px;
+    text-align: center;
+    box-shadow: 0 4px 0 #e4d8c1;
+}
+
+.score-box .label {
+    font-size: 11px;
+    color: #a18b70;
+    margin-bottom: 6px;
+}
+
+.score-box .number {
+    font-size: 25px;
+    font-weight: bold;
+    color: #65472e;
+}
+
+#timer {
+    color: #e66c4e;
+}
+
+/* 게임판 */
+
+.board {
+    width: 100%;
+    max-width: 430px;
+    aspect-ratio: 1 / 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 12px;
+    margin: auto 0;
+}
+
+.hole {
+    position: relative;
+    overflow: hidden;
+    background: #d9b98c;
+    border-radius: 50%;
+    box-shadow:
+        inset 0 7px 0 #b38c61,
+        0 5px 0 #b38c61;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.hole:active {
+    transform: scale(0.97);
+}
+
+.character {
+    position: absolute;
+    left: 0;
+    bottom: -100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(35px, 11vw, 65px);
+    transition: bottom 0.12s ease-out;
+    pointer-events: none;
+}
+
+.hole.active .character {
+    bottom: 0;
+}
+
+.hole.bomb .character {
+    bottom: 0;
+}
+
+/* 버튼 */
+
+.start-button {
+    width: 100%;
+    max-width: 300px;
+    padding: 17px;
+    border: none;
+    border-radius: 15px;
+    background: #e68c57;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 0 #c66c3e;
+    cursor: pointer;
+}
+
+.start-button:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #c66c3e;
+}
+
+.help {
+    font-size: 12px;
+    color: #9b8062;
+    line-height: 1.8;
+    text-align: center;
+}
+
+/* 게임 종료 화면 */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(50, 35, 25, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 20px;
+}
+
+.result {
+    width: 100%;
+    max-width: 350px;
+    background: #fffaf0;
+    border-radius: 25px;
+    padding: 35px 20px;
+    text-align: center;
+}
+
+.result h2 {
+    font-size: 30px;
+    color: #61452f;
+    margin-bottom: 20px;
+}
+
+.result p {
+    color: #9b8062;
+    line-height: 2;
+    margin-bottom: 20px;
+}
+
+.result strong {
+    color: #e68c57;
+    font-size: 35px;
+}
+
+.result button {
+    width: 100%;
+    padding: 15px;
+    background: #e68c57;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* 작은 화면 */
+
+@media (max-height: 650px) {
+    .game {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    h1 {
+        font-size: 25px;
+        margin-top: 5px;
+    }
+
+    .subtitle {
+        margin-bottom: 12px;
+    }
+
+    .score-board {
+        margin-bottom: 12px;
+    }
+
+    .board {
+        max-width: min(65vh, 400px);
+    }
+
+    .start-button {
+        margin-top: 12px;
+        margin-bottom: 8px;
+        padding: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <h1>🐹 두더지 잡기</h1>
+
+    <p class="subtitle">
+        두더지를 잡고 최고 기록에 도전하세요!
+    </p>
+
+    <!-- 점수판 -->
+
+    <div class="score-board">
+
+        <div class="score-box">
+            <div class="label">SCORE</div>
+            <div class="number" id="score">0</div>
+        </div>
+
+        <div class="score-box">
+            <div class="label">TIME</div>
+            <div class="number" id="timer">30</div>
+        </div>
+
+        <div class="score-box">
+            <div class="label">BEST</div>
+            <div class="number" id="best">0</div>
+        </div>
+
+    </div>
+
+    <!-- 3x3 게임판 -->
+
+    <div class="board" id="board">
+
+        <div class="hole" data-index="0">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="1">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="2">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="3">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="4">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="5">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="6">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="7">
+            <div class="character"></div>
+        </div>
+
+        <div class="hole" data-index="8">
+            <div class="character"></div>
+        </div>
+
+    </div>
+
+    <button class="start-button" id="startButton">
+        게임 시작
+    </button>
+
+    <div class="help">
+        🐹 두더지를 터치하면 +1점<br>
+        💣 폭탄을 터치하면 -3점
+    </div>
+
+</div>
+
+
+<!-- 게임 종료 팝업 -->
+
+<div class="overlay hidden" id="overlay">
+
+    <div class="result">
+
+        <h2>게임 종료!</h2>
+
+        <p>
+            최종 점수<br>
+            <strong id="finalScore">0</strong>점
+            <br><br>
+            최고 기록 : <span id="finalBest">0</span>점
+        </p>
+
+        <button id="restartButton">
+            다시 도전하기
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =================================
+   기본 설정
+================================= */
+
+const holes = document.querySelectorAll(".hole");
+
+const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
+const bestDisplay = document.getElementById("best");
+
+const startButton = document.getElementById("startButton");
+
+const overlay = document.getElementById("overlay");
+
+const finalScore = document.getElementById("finalScore");
+const finalBest = document.getElementById("finalBest");
+
+let score = 0;
+let timeLeft = 30;
+
+let playing = false;
+
+let currentHole = -1;
+let currentType = "";
+
+let moleTimeout;
+let gameInterval;
+let countdownInterval;
+
+let bestScore = Number(
+    localStorage.getItem("moleBest") || 0
+);
+
+bestDisplay.textContent = bestScore;
+
+
+/* =================================
+   게임 난이도
+================================= */
+
+// 시간이 지날수록 두더지가
+// 더 빨리 올라왔다 내려간다.
+
+function getSpeed() {
+
+    const elapsed = 30 - timeLeft;
+
+    return Math.max(
+        350,
+        950 - elapsed * 20
+    );
+}
+
+
+/* =================================
+   구멍 초기화
+================================= */
+
+function clearHoles() {
+
+    holes.forEach(hole => {
+
+        hole.classList.remove("active");
+        hole.classList.remove("bomb");
+
+        hole.querySelector(".character").textContent = "";
+
+    });
+
+    currentHole = -1;
+    currentType = "";
+}
+
+
+/* =================================
+   랜덤 구멍 선택
+================================= */
+
+function randomHole() {
+
+    let index;
+
+    do {
+
+        index = Math.floor(
+            Math.random() * holes.length
+        );
+
+    } while (index === currentHole);
+
+    return index;
+}
+
+
+/* =================================
+   두더지 등장
+================================= */
+
+function showMole() {
+
+    if (!playing) return;
+
+    clearHoles();
+
+    const index = randomHole();
+
+    const hole = holes[index];
+
+    currentHole = index;
+
+    // 폭탄 등장 확률 15%
+    const isBomb = Math.random() < 0.15;
+
+    if (isBomb) {
+
+        currentType = "bomb";
+
+        hole.querySelector(".character").textContent = "💣";
+
+        hole.classList.add("bomb");
+
+    } else {
+
+        currentType = "mole";
+
+        hole.querySelector(".character").textContent = "🐹";
+
+        hole.classList.add("active");
+
+    }
+
+    // 등장 시간
+    const speed = getSpeed();
+
+    moleTimeout = setTimeout(() => {
+
+        if (!playing) return;
+
+        clearHoles();
+
+        // 다음 두더지 등장
+        const nextDelay = Math.max(
+            100,
+            speed * 0.2
+        );
+
+        gameInterval = setTimeout(
+            showMole,
+            nextDelay
+        );
+
+    }, speed);
+
+}
+
+
+/* =================================
+   점수 업데이트
+================================= */
+
+function updateScore() {
+
+    scoreDisplay.textContent = score;
+
+    if (score > bestScore) {
+
+        bestScore = score;
+
+        bestDisplay.textContent = bestScore;
+
+        localStorage.setItem(
+            "moleBest",
+            bestScore
+        );
+
+    }
+
+}
+
+
+/* =================================
+   두더지 터치
+================================= */
+
+holes.forEach(hole => {
+
+    hole.addEventListener("pointerdown", (e) => {
+
+        e.preventDefault();
+
+        if (!playing) return;
+
+        const index = Number(
+            hole.dataset.index
+        );
+
+        // 현재 등장한 구멍을 눌렀는지 확인
+        if (index !== currentHole) return;
+
+        if (currentType === "mole") {
+
+            // 두더지 성공
+            score += 1;
+
+            updateScore();
+
+            clearTimeout(moleTimeout);
+            clearTimeout(gameInterval);
+
+            clearHoles();
+
+            // 다음 등장
+            gameInterval = setTimeout(
+                showMole,
+                150
+            );
+
+        }
+
+        else if (currentType === "bomb") {
+
+            // 폭탄 터치
+            score = Math.max(0, score - 3);
+
+            updateScore();
+
+            clearTimeout(moleTimeout);
+            clearTimeout(gameInterval);
+
+            clearHoles();
+
+            // 다음 등장
+            gameInterval = setTimeout(
+                showMole,
+                150
+            );
+
+        }
+
+    });
+
+});
+
+
+/* =================================
+   타이머
+================================= */
+
+function startTimer() {
+
+    countdownInterval = setInterval(() => {
+
+        if (!playing) return;
+
+        timeLeft--;
+
+        timerDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+
+            endGame();
+
+        }
+
+    }, 1000);
+
+}
+
+
+/* =================================
+   게임 시작
+================================= */
+
+function startGame() {
+
+    // 기존 타이머 정리
+    clearTimeout(moleTimeout);
+    clearTimeout(gameInterval);
+    clearInterval(countdownInterval);
+
+    clearHoles();
+
+    score = 0;
+    timeLeft = 30;
+
+    scoreDisplay.textContent = 0;
+    timerDisplay.textContent = 30;
+
+    playing = true;
+
+    overlay.classList.add("hidden");
+
+    startButton.textContent = "게임 진행 중...";
+
+    startButton.disabled = true;
+
+    showMole();
+
+    startTimer();
+
+}
+
+
+/* =================================
+   게임 종료
+================================= */
+
+function endGame() {
+
+    playing = false;
+
+    clearTimeout(moleTimeout);
+    clearTimeout(gameInterval);
+    clearInterval(countdownInterval);
+
+    clearHoles();
+
+    updateScore();
+
+    finalScore.textContent = score;
+
+    finalBest.textContent = bestScore;
+
+    overlay.classList.remove("hidden");
+
+    startButton.textContent = "게임 시작";
+
+    startButton.disabled = false;
+
+}
+
+
+/* =================================
+   버튼 이벤트
+================================= */
+
+startButton.addEventListener(
+    "click",
+    startGame
+);
+
+document.getElementById("restartButton")
+    .addEventListener("click", () => {
+
+        startGame();
+
+    });
+
+
+</script>
+
+</body>
+</html>
+```
