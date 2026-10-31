@@ -1,0 +1,890 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>MEMORY GAME</title>
+
+<style>
+
+/* =========================
+   기본 설정
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #f2f0e9;
+    font-family: Arial, sans-serif;
+    color: #30302d;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.game {
+    width: 100%;
+    max-width: 550px;
+    min-height: 100dvh;
+    margin: auto;
+    padding: 35px 20px 25px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* =========================
+   제목
+========================= */
+
+.title {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #99968b;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+}
+
+/* =========================
+   점수판
+========================= */
+
+.info {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.info-box {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 13px 5px;
+    text-align: center;
+    box-shadow: 0 3px 0 #dedbd1;
+}
+
+.info-label {
+    color: #aaa69a;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-bottom: 7px;
+}
+
+.info-value {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+/* =========================
+   카드 게임판
+========================= */
+
+.board {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: auto 0;
+    perspective: 1000px;
+}
+
+/* 카드 */
+
+.card {
+    aspect-ratio: 1 / 1;
+    position: relative;
+    cursor: pointer;
+    perspective: 800px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    transform-style: preserve-3d;
+
+    transition: transform 0.55s cubic-bezier(
+        0.2, 0.7, 0.2, 1
+    );
+}
+
+/* 카드 뒤집기 */
+
+.card.flipped .card-inner,
+.card.matched .card-inner {
+    transform: rotateY(180deg);
+}
+
+/* 카드 앞면과 뒷면 */
+
+.card-front,
+.card-back {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* 뒷면 */
+
+.card-back {
+    background: #424b43;
+    color: #e8e5d9;
+
+    font-size: 25px;
+
+    border: 2px solid #596456;
+
+    box-shadow: 0 4px 0 #303a32;
+}
+
+/* 앞면 */
+
+.card-front {
+    background: #fffdf6;
+
+    transform: rotateY(180deg);
+
+    font-size: clamp(30px, 9vw, 55px);
+
+    border: 2px solid #dedbd1;
+
+    box-shadow: 0 4px 0 #dedbd1;
+}
+
+/* 짝을 맞춘 카드 */
+
+.card.matched .card-front {
+    background: #e2eadc;
+    border-color: #b5c9a8;
+    box-shadow: 0 4px 0 #b5c9a8;
+}
+
+/* 카드 눌림 */
+
+.card:not(.matched):active {
+    transform: scale(0.96);
+}
+
+/* =========================
+   버튼
+========================= */
+
+.restart-button {
+    width: 100%;
+    max-width: 280px;
+
+    padding: 16px;
+
+    margin-top: 30px;
+
+    background: #424b43;
+    color: white;
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+
+    cursor: pointer;
+}
+
+.restart-button:active {
+    transform: scale(0.97);
+}
+
+/* =========================
+   게임 완료 화면
+========================= */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(30, 35, 30, 0.65);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 10;
+}
+
+.result {
+    width: 100%;
+    max-width: 330px;
+
+    background: #f8f6ef;
+
+    border-radius: 20px;
+
+    padding: 35px 25px;
+
+    text-align: center;
+}
+
+.result h2 {
+    font-size: 27px;
+    margin-bottom: 15px;
+}
+
+.result .emoji {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.result p {
+    color: #898579;
+    font-size: 14px;
+    line-height: 2;
+    margin-bottom: 20px;
+}
+
+.result strong {
+    color: #424b43;
+    font-size: 20px;
+}
+
+.result button {
+    width: 100%;
+    padding: 14px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #424b43;
+    color: white;
+
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================
+   작은 화면 대응
+========================= */
+
+@media (max-width: 380px) {
+
+    .game {
+        padding: 25px 14px 20px;
+    }
+
+    .board {
+        gap: 7px;
+    }
+
+    .card-front,
+    .card-back {
+        border-radius: 9px;
+    }
+
+    .info {
+        gap: 6px;
+    }
+
+    .info-value {
+        font-size: 20px;
+    }
+}
+
+@media (max-height: 650px) {
+
+    .game {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .title {
+        font-size: 24px;
+        margin-bottom: 4px;
+    }
+
+    .subtitle {
+        margin-bottom: 12px;
+    }
+
+    .info {
+        margin-bottom: 12px;
+    }
+
+    .board {
+        max-width: min(70vw, 55vh, 400px);
+    }
+
+    .restart-button {
+        margin-top: 15px;
+        padding: 12px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <!-- 제목 -->
+
+    <h1 class="title">MEMORY GAME</h1>
+
+    <p class="subtitle">
+        FIND ALL THE MATCHING PAIRS
+    </p>
+
+
+    <!-- 정보판 -->
+
+    <div class="info">
+
+        <div class="info-box">
+
+            <div class="info-label">
+                MOVES
+            </div>
+
+            <div class="info-value" id="moves">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <div class="info-label">
+                TIME
+            </div>
+
+            <div class="info-value" id="time">
+                00:00
+            </div>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <div class="info-label">
+                PAIRS
+            </div>
+
+            <div class="info-value" id="pairs">
+                0/8
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- 카드 게임판 -->
+
+    <div class="board" id="board">
+
+    </div>
+
+
+    <!-- 다시 시작 -->
+
+    <button class="restart-button" id="restart">
+        NEW GAME ↻
+    </button>
+
+</div>
+
+
+<!-- 완료 화면 -->
+
+<div class="overlay hidden" id="overlay">
+
+    <div class="result">
+
+        <div class="emoji">🎉</div>
+
+        <h2>PERFECT!</h2>
+
+        <p>
+            모든 카드를 찾았습니다!<br><br>
+
+            뒤집은 횟수<br>
+            <strong id="resultMoves">0</strong>회
+
+            <br><br>
+
+            걸린 시간<br>
+            <strong id="resultTime">00:00</strong>
+        </p>
+
+        <button id="playAgain">
+            다시 플레이
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   기본 설정
+========================= */
+
+const board = document.getElementById("board");
+
+const movesDisplay =
+    document.getElementById("moves");
+
+const timeDisplay =
+    document.getElementById("time");
+
+const pairsDisplay =
+    document.getElementById("pairs");
+
+const overlay =
+    document.getElementById("overlay");
+
+const resultMoves =
+    document.getElementById("resultMoves");
+
+const resultTime =
+    document.getElementById("resultTime");
+
+
+/* =========================
+   그림 목록
+========================= */
+
+// 원하는 그림으로 변경할 수 있어.
+
+const pictures = [
+    "🐱",
+    "🐶",
+    "🐰",
+    "🦊",
+    "🐻",
+    "🐼",
+    "🐸",
+    "🐧"
+];
+
+
+/* =========================
+   게임 변수
+========================= */
+
+let cards = [];
+
+let flippedCards = [];
+
+let moves = 0;
+
+let matchedPairs = 0;
+
+let seconds = 0;
+
+let started = false;
+
+let locked = false;
+
+let timerInterval = null;
+
+let startTime = null;
+
+
+/* =========================
+   카드 섞기
+========================= */
+
+function shuffle(array) {
+
+    for (let i = array.length - 1; i > 0; i--) {
+
+        const j = Math.floor(
+            Math.random() * (i + 1)
+        );
+
+        [array[i], array[j]] =
+            [array[j], array[i]];
+
+    }
+
+    return array;
+}
+
+
+/* =========================
+   카드 만들기
+========================= */
+
+function createCards() {
+
+    // 그림을 두 장씩 복사
+
+    let cardList = [];
+
+    pictures.forEach((picture, index) => {
+
+        cardList.push({
+            id: index,
+            picture: picture
+        });
+
+        cardList.push({
+            id: index,
+            picture: picture
+        });
+
+    });
+
+
+    // 무작위로 섞기
+
+    cards = shuffle(cardList);
+
+
+    // 기존 카드 제거
+
+    board.innerHTML = "";
+
+
+    // HTML 카드 생성
+
+    cards.forEach((card, index) => {
+
+        const element = document.createElement("div");
+
+        element.className = "card";
+
+        element.dataset.id = card.id;
+
+        element.innerHTML = `
+
+            <div class="card-inner">
+
+                <div class="card-back">
+                    ✦
+                </div>
+
+                <div class="card-front">
+                    ${card.picture}
+                </div>
+
+            </div>
+
+        `;
+
+
+        // 클릭 이벤트
+
+        element.addEventListener("click", () => {
+
+            flipCard(element);
+
+        });
+
+
+        board.appendChild(element);
+
+    });
+
+}
+
+
+/* =========================
+   카드 뒤집기
+========================= */
+
+function flipCard(card) {
+
+    // 게임 종료 또는 잠금 상태 확인
+
+    if (locked) return;
+
+    // 이미 열린 카드인지 확인
+
+    if (
+        card.classList.contains("flipped") ||
+        card.classList.contains("matched")
+    ) {
+        return;
+    }
+
+
+    // 첫 번째 카드 선택 시 타이머 시작
+
+    if (!started) {
+
+        startTimer();
+
+        started = true;
+
+    }
+
+
+    // 카드 뒤집기
+
+    card.classList.add("flipped");
+
+    flippedCards.push(card);
+
+
+    // 두 장을 뒤집었는지 확인
+
+    if (flippedCards.length === 2) {
+
+        moves++;
+
+        movesDisplay.textContent = moves;
+
+        checkMatch();
+
+    }
+
+}
+
+
+/* =========================
+   카드 비교
+========================= */
+
+function checkMatch() {
+
+    const first = flippedCards[0];
+
+    const second = flippedCards[1];
+
+
+    const firstId = first.dataset.id;
+
+    const secondId = second.dataset.id;
+
+
+    // 같은 그림이라면
+
+    if (firstId === secondId) {
+
+        first.classList.add("matched");
+
+        second.classList.add("matched");
+
+        matchedPairs++;
+
+        pairsDisplay.textContent =
+            matchedPairs + "/8";
+
+        flippedCards = [];
+
+
+        // 모든 짝을 찾았는지 확인
+
+        if (matchedPairs === 8) {
+
+            finishGame();
+
+        }
+
+    }
+
+    // 다른 그림이라면
+
+    else {
+
+        locked = true;
+
+        setTimeout(() => {
+
+            first.classList.remove("flipped");
+
+            second.classList.remove("flipped");
+
+            flippedCards = [];
+
+            locked = false;
+
+        }, 900);
+
+    }
+
+}
+
+
+/* =========================
+   타이머 시작
+========================= */
+
+function startTimer() {
+
+    startTime = Date.now();
+
+    timerInterval = setInterval(() => {
+
+        seconds = Math.floor(
+            (Date.now() - startTime) / 1000
+        );
+
+        updateTimer();
+
+    }, 250);
+
+}
+
+
+/* =========================
+   시간 표시
+========================= */
+
+function updateTimer() {
+
+    const minutes = Math.floor(seconds / 60);
+
+    const remainingSeconds = seconds % 60;
+
+    const formattedMinutes =
+        String(minutes).padStart(2, "0");
+
+    const formattedSeconds =
+        String(remainingSeconds).padStart(2, "0");
+
+
+    timeDisplay.textContent =
+        formattedMinutes + ":" + formattedSeconds;
+
+}
+
+
+/* =========================
+   게임 완료
+========================= */
+
+function finishGame() {
+
+    clearInterval(timerInterval);
+
+    locked = true;
+
+    resultMoves.textContent = moves;
+
+    resultTime.textContent =
+        timeDisplay.textContent;
+
+
+    // 잠시 후 완료 화면 표시
+
+    setTimeout(() => {
+
+        overlay.classList.remove("hidden");
+
+    }, 700);
+
+}
+
+
+/* =========================
+   게임 초기화
+========================= */
+
+function newGame() {
+
+    // 기존 타이머 제거
+
+    clearInterval(timerInterval);
+
+
+    // 변수 초기화
+
+    flippedCards = [];
+
+    moves = 0;
+
+    matchedPairs = 0;
+
+    seconds = 0;
+
+    started = false;
+
+    locked = false;
+
+    startTime = null;
+
+
+    // 화면 초기화
+
+    movesDisplay.textContent = "0";
+
+    timeDisplay.textContent = "00:00";
+
+    pairsDisplay.textContent = "0/8";
+
+
+    // 완료 화면 닫기
+
+    overlay.classList.add("hidden");
+
+
+    // 새로운 카드 생성
+
+    createCards();
+
+}
+
+
+/* =========================
+   버튼 이벤트
+========================= */
+
+document.getElementById("restart")
+    .addEventListener("click", newGame);
+
+
+document.getElementById("playAgain")
+    .addEventListener("click", newGame);
+
+
+/* =========================
+   최초 실행
+========================= */
+
+newGame();
+
+</script>
+
+</body>
+</html>
+```
