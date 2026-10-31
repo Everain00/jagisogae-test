@@ -62,10 +62,6 @@ button:hover{background:#424942}
   function makePlatform(y,type='normal',x=rand(30,W-130)){
     return {x,y,w:100,h:13,type,baseX:x,phase:rand(0,Math.PI*2),broken:false,breakAt:0,gone:false};
   }
-  function nextPlatformX(previous){
-  const shift = rand(-105, 105);
-  return Math.max(20, Math.min(W-120, previous.x + shift));
-}
   function reset(){
     score=0;camera=0;
     player={x:W/2-16,y:H-100,w:32,h:38,vx:0,vy:0,onGround:false};
@@ -122,28 +118,7 @@ button:hover{background:#424942}
         player.y=p.y-player.h;
         player.vy=0;
         player.onGround=true;
-if(jumpKey&&!wasDown&&player&&player.onGround&&running){
-  const stoodOn = player.standingPlatform;
-
-  // 부서지는 바닥은 그 위에서 점프할 때만 파괴
-  if(stoodOn && stoodOn.type === 'break'){
-    stoodOn.broken = true;
-    stoodOn.breakAt = performance.now() + 170;
-  }
-
-  player.standingPlatform = null;
-  player.vy = -10.5;
-  player.onGround = false;
-  jumpHeld = true;
-}
-        player.standingPlatform = p;
-
-if(p.type==='spring'){
-  player.vy=-15.5;
-  player.onGround=false;
-  jumpHeld=false;
-  player.standingPlatform=null;
-}
+        if(p.type==='break'){p.broken=true;p.breakAt=performance.now()+170;}
         if(p.type==='spring'){player.vy=-15.5;player.onGround=false;jumpHeld=false;}
       }
     }
