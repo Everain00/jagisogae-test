@@ -440,7 +440,7 @@ function createUFO() {
         // 추적 상태
         tracking: true,
 
-        trackingTime: 3,
+        trackingTime: 5,
 
         // 방향 벡터
         vx: dx / length,
@@ -1023,7 +1023,7 @@ function gameLoop(time) {
     );
 
     ship.y = Math.max(
-        H * 0.5,
+        H * 1,
         Math.min(H - ship.height / 2, ship.y)
     );
 
