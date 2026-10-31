@@ -1,471 +1,227 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>임연우 | 자기소개와 목표</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVERAIN | HOME</title>
+  <style>
+    * { box-sizing: border-box; }
 
-    <!-- ===== D-day 설정: 날짜와 이름을 여기서 변경하세요! ===== -->
-    <script>
-        const TARGET_DATE = "2027-11-18";
-        const TARGET_NAME = "수능까지";
-    </script>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #20251f;
+      background: #f6f7f1;
+      font-family: "Noto Sans KR", sans-serif;
+    }
 
-    <style>
-        :root {
-            --bg: #e6ebf2;
-            --surface: #e6ebf2;
-            --text: #354052;
-            --muted: #7b8798;
-            --accent: #647db5;
-            --shadow-light: #ffffff;
-            --shadow-dark: #c3cad5;
-        }
+    .wrap {
+      width: min(1080px, calc(100% - 48px));
+      margin: auto;
+      padding: 34px 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        * { box-sizing: border-box; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0 24px;
+      border-bottom: 1px solid #ddd;
+    }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            padding: 32px 14px 48px;
-            font-family: "Malgun Gothic", sans-serif;
-            color: var(--text);
-            background: var(--bg);
-        }
+    .logo {
+      font-weight: 800;
+      letter-spacing: .22em;
+    }
 
-        .profile-container {
-            width: 100%;
-            max-width: 360px;
-            margin: 0 auto 42px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .edition {
+      color: #737b70;
+      font-size: 11px;
+      letter-spacing: .16em;
+    }
 
-        .dday-box {
-            width: 100%;
-            padding: 26px 20px;
-            margin-bottom: 22px;
-            background: var(--surface);
-            border-radius: 28px;
-            box-shadow: 9px 9px 18px var(--shadow-dark),
-                        -9px -9px 18px var(--shadow-light);
-            text-align: center;
-            color: var(--text);
-        }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-        .dday-number {
-            margin: 0;
-            font-size: clamp(48px, 12vw, 68px);
-            font-weight: 800;
-            letter-spacing: -2px;
-            line-height: 1.2;
-        }
+    .intro { padding: 72px 0 44px; }
 
-        .dday-label {
-            margin: 8px 0 0;
-            font-size: 14px;
-            color: var(--accent);
-            font-weight: 600;
-        }
+    .eyebrow {
+      color: #52745d;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: .2em;
+      margin-bottom: 20px;
+    }
 
-        .card {
-            width: 100%;
-            padding: 40px 28px;
-            background: var(--surface);
-            border-radius: 28px;
-            text-align: center;
-            box-shadow: 9px 9px 18px var(--shadow-dark),
-                        -9px -9px 18px var(--shadow-light);
-        }
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1.08;
+      letter-spacing: -.065em;
+    }
 
-        .emoji {
-            font-size: 72px;
-            line-height: 1.3;
-            margin-bottom: 20px;
-        }
+    h1 span { color: #52745d; }
 
-        h1 {
-            margin: 0 0 12px;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
+    .intro p {
+      margin-top: 22px;
+      color: #737b70;
+      font-size: 15px;
+      line-height: 1.8;
+    }
 
-        .intro {
-            margin: 0;
-            font-size: 14px;
-            line-height: 1.8;
-            color: var(--muted);
-            word-break: keep-all;
-        }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      padding-bottom: 58px;
+    }
 
-        .favorites {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin: 28px 0;
-        }
+    .card {
+      min-height: 260px;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 22px;
+      background: rgba(255,255,255,.8);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: .22s;
+    }
 
-        .tag {
-            padding: 10px 16px;
-            background: var(--surface);
-            color: var(--accent);
-            border-radius: 999px;
-            font-size: 14px;
-            box-shadow: 4px 4px 8px var(--shadow-dark),
-                        -4px -4px 8px var(--shadow-light);
-        }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 42px rgba(42,58,43,.09);
+    }
 
-        .github-button {
-            display: block;
-            width: 100%;
-            padding: 14px 20px;
-            background: var(--surface);
-            color: var(--text);
-            border-radius: 14px;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 700;
-            box-shadow: 6px 6px 12px var(--shadow-dark),
-                        -6px -6px 12px var(--shadow-light);
-            transition: box-shadow 0.2s, transform 0.2s, color 0.2s;
-        }
+    .card-number {
+      color: #52745d;
+      font-size: 11px;
+      letter-spacing: .16em;
+      font-weight: bold;
+    }
 
-        .github-button:hover {
-            color: var(--accent);
-            transform: translateY(-1px);
-        }
+    .icon {
+      font-size: 31px;
+      margin: 22px 0 14px;
+    }
 
-        .github-button:active {
-            box-shadow: inset 5px 5px 10px var(--shadow-dark),
-                        inset -5px -5px 10px var(--shadow-light);
-            transform: translateY(0);
-        }
+    .card h2 {
+      margin: 0;
+      font-size: 27px;
+    }
 
-        .mandalart-section {
-            width: 100%;
-            max-width: 720px;
-            margin: 0 auto;
-        }
+    .card p {
+      color: #737b70;
+      font-size: 14px;
+      line-height: 1.65;
+    }
 
-        .mandalart-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
+    .go {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      color: #52745d;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: .12em;
+    }
 
-        .mandalart-header h2 {
-            margin: 0 0 8px;
-            font-size: clamp(26px, 6vw, 36px);
-            letter-spacing: -1px;
-        }
+    .arrow { font-size: 20px; }
 
-        .mandalart-hint {
-            margin: 0;
-            color: var(--muted);
-            font-size: 14px;
-        }
+    footer {
+      border-top: 1px solid #ddd;
+      padding-top: 18px;
+      color: #92988e;
+      font-size: 10px;
+      letter-spacing: .14em;
+      display: flex;
+      justify-content: space-between;
+    }
 
-        .mandalart-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-            width: 100%;
-        }
-
-        .goal-cell {
-            aspect-ratio: 1 / 1;
-            min-width: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: clamp(5px, 2vw, 14px);
-            border: 1px solid transparent;
-            border-radius: 20px;
-            background: var(--surface);
-            box-shadow: 7px 7px 14px var(--shadow-dark),
-                        -7px -7px 14px var(--shadow-light);
-            color: #465268;
-            font-family: inherit;
-            font-size: clamp(11px, 2.7vw, 16px);
-            line-height: 1.5;
-            text-align: center;
-            overflow-wrap: anywhere;
-            word-break: keep-all;
-            cursor: text;
-            outline: none;
-            transition: box-shadow 0.2s, color 0.2s, border-color 0.2s;
-        }
-
-        .goal-cell:focus {
-            border-color: #aab8d6;
-            box-shadow: inset 5px 5px 10px var(--shadow-dark),
-                        inset -5px -5px 10px var(--shadow-light);
-        }
-
-        .goal-cell.center {
-            background: #dce4f2;
-            color: #435b91;
-            font-weight: 700;
-            box-shadow: inset 5px 5px 10px #bdc7d8,
-                        inset -5px -5px 10px #fbffff;
-        }
-
-        .goal-cell.center:focus {
-            border-color: #8299c7;
-        }
-
-        .mandalart-note {
-            margin: 20px 0 0;
-            text-align: center;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.7;
-        }
-
-        @media (max-width: 400px) {
-            body { padding: 20px 10px 36px; }
-            .card { padding: 32px 22px; }
-            .emoji { font-size: 64px; }
-            h1 { font-size: 26px; }
-            .mandalart-grid { gap: 9px; }
-        }
-
-        @media (max-width: 360px) {
-            .mandalart-grid { gap: 6px; }
-            .goal-cell {
-                border-radius: 14px;
-                padding: 4px;
-                font-size: 11px;
-            }
-        }
-
-
-        /* Frosted Glassmorphism theme */
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.34);
-            --glass-border: rgba(255, 255, 255, 0.62);
-            --text: #27334b;
-            --muted: #5e6a80;
-            --accent: #526bb0;
-        }
-
-        body {
-            background:
-                radial-gradient(circle at 12% 12%, rgba(207, 215, 255, .92), transparent 36%),
-                radial-gradient(circle at 88% 18%, rgba(177, 185, 255, .78), transparent 34%),
-                radial-gradient(circle at 70% 88%, rgba(224, 219, 255, .82), transparent 36%),
-                linear-gradient(135deg, #dfe4ff 0%, #c5ccff 48%, #e9e7ff 100%);
-            background-attachment: fixed;
-        }
-
-        .dday-box, .card, .goal-cell {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 12px 36px rgba(45, 60, 100, .13),
-                        inset 0 1px 0 rgba(255, 255, 255, .48);
-            -webkit-backdrop-filter: blur(18px) saturate(150%);
-            backdrop-filter: blur(18px) saturate(150%);
-        }
-
-        .dday-box {
-            border-radius: 26px;
-            background: linear-gradient(135deg, rgba(132, 148, 220, .66), rgba(164, 151, 218, .60));
-            border: 1px solid rgba(255, 255, 255, .76);
-            box-shadow: 0 16px 38px rgba(67, 79, 151, .22),
-                        inset 0 1px 0 rgba(255, 255, 255, .58);
-        }
-
-        .dday-label {
-            color: #394b91;
-        }
-
-        .card {
-            border-radius: 28px;
-            background: rgba(255, 255, 255, .42);
-        }
-
-        .tag {
-            background: rgba(255, 255, 255, .36);
-            border: 1px solid rgba(255, 255, 255, .66);
-            box-shadow: 0 5px 16px rgba(45, 60, 100, .08);
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-        }
-
-        .github-button {
-            background: rgba(62, 78, 124, .82);
-            border: 1px solid rgba(255, 255, 255, .38);
-            box-shadow: 0 8px 20px rgba(42, 56, 96, .18);
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-        }
-
-        .github-button:hover {
-            background: rgba(75, 95, 151, .92);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(42, 56, 96, .22);
-        }
-
-        .goal-cell {
-            border-radius: 18px;
-            color: #303c56;
-            transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
-        }
-
-        .goal-cell:hover {
-            background: rgba(255, 255, 255, .48);
-            box-shadow: 0 15px 32px rgba(45, 60, 100, .16),
-                        inset 0 1px 0 rgba(255, 255, 255, .62);
-            transform: translateY(-2px);
-        }
-
-        .goal-cell:focus {
-            border-color: rgba(104, 130, 207, .72);
-            box-shadow: 0 0 0 3px rgba(140, 158, 232, .2),
-                        0 12px 28px rgba(45, 60, 100, .12);
-        }
-
-        .goal-cell.center {
-            background: linear-gradient(145deg, rgba(130, 149, 224, .70), rgba(169, 151, 218, .66));
-            border: 1px solid rgba(255, 255, 255, .86);
-            color: #26366f;
-            box-shadow: 0 14px 32px rgba(65, 79, 158, .24),
-                        inset 0 1px 0 rgba(255, 255, 255, .72);
-            font-weight: 800;
-        }
-
-        .goal-cell.center:hover {
-            background: linear-gradient(145deg, rgba(119, 139, 218, .78), rgba(157, 139, 211, .74));
-        }
-
-        .goal-cell.center:focus {
-            border-color: rgba(91, 113, 198, .8);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .goal-cell, .github-button { transition: none; }
-        }
-
-    </style>
+    @media(max-width:650px) {
+      .cards { grid-template-columns: 1fr; }
+      .card { min-height: 225px; }
+      footer { flex-direction: column; gap: 12px; }
+    }
+  </style>
 </head>
 
 <body>
-    <!-- D-day와 자기소개 카드 -->
-    <section class="profile-container">
-        <div class="dday-box" aria-label="D-day 카운터">
-            <p class="dday-number" id="dday-number">D-0</p>
-            <p class="dday-label" id="dday-label">수능까지</p>
-        </div>
+<div class="wrap">
 
-        <main class="card">
-            <div class="emoji" aria-label="눈 내리는 날">🌨️</div>
+  <header>
+    <div class="logo">EVERAIN</div>
+    <div class="edition">PERSONAL SPACE · 2026</div>
+  </header>
 
-            <h1>임연우</h1>
-            <p class="intro">겨울과 음악을 좋아하는 고등학교 2학년입니다</p>
+  <main>
+    <section class="intro">
+      <div class="eyebrow">WELCOME TO MY SPACE</div>
 
-            <div class="favorites">
-                <span class="tag">📚 책</span>
-                <span class="tag">🎧 음악</span>
-                <span class="tag">❄️ 눈</span>
-            </div>
+      <h1>
+        바이브 코딩<br>
+        <span>허브</span>
+      </h1>
 
-            <!-- 실제 깃허브 프로필 주소로 바꿀 수 있습니다. -->
-            <a
-                class="github-button"
-                href="https://github.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-            >내 깃허브 ↗</a>
-        </main>
+      <p>
+        목표를 기록하고, 직접 만든 게임을 즐기는 공간입니다.<br>
+        아래에서 원하는 페이지를 선택해 주세요.
+      </p>
     </section>
 
-    <!-- 만다라트 목표판 -->
-    <section class="mandalart-section">
-        <header class="mandalart-header">
-            <h2>나의 목표</h2>
-            <p class="mandalart-hint">칸을 눌러서 고칠 수 있어요</p>
-        </header>
+    <nav class="cards">
 
-        <div class="mandalart-grid" aria-label="3x3 만다라트 목표판">
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 1" spellcheck="false">매일 30분 영어 듣기</div>
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 2" spellcheck="false">수학 오답노트</div>
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 3" spellcheck="false">주 3회 운동</div>
+      <a class="card"
+         href="https://everain00.github.io/everain-vibecoding/goal/index.html">
 
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 4" spellcheck="false">독서 월 2권</div>
-            <div class="goal-cell center" contenteditable="true" role="textbox" aria-label="중심 목표" spellcheck="false">해양생물학과 진학</div>
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 5" spellcheck="false">과학 동아리 발표</div>
+        <div class="card-number">01 / MY GOALS</div>
+        <div class="icon">✳</div>
+        <h2>만다라트</h2>
 
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 6" spellcheck="false">7시간 수면</div>
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 7" spellcheck="false">봉사활동 20시간</div>
-            <div class="goal-cell" contenteditable="true" role="textbox" aria-label="세부 목표 8" spellcheck="false">코딩 포트폴리오</div>
+        <p>
+          생각과 목표를 정리하고<br>
+          매일의 작은 실천을 기록하는 곳.
+        </p>
+
+        <div class="go">
+          <span>EXPLORE GOALS</span>
+          <span class="arrow">↗</span>
         </div>
+      </a>
 
-        <p class="mandalart-note">수정한 내용은 자동으로 저장돼요. 같은 브라우저에서 다시 열어도 유지됩니다.</p>
-    </section>
+      <a class="card"
+         href="https://everain00.github.io/everain-vibecoding/game/main.html">
 
-    <script>
-        // D-day 자동 계산
-        function updateDday() {
-            const today = new Date();
-            const target = new Date(TARGET_DATE + "T00:00:00");
-            today.setHours(0, 0, 0, 0);
+        <div class="card-number">02 / PLAYGROUND</div>
+        <div class="icon">✦</div>
+        <h2>게임 아카이브</h2>
 
-            const difference = target.getTime() - today.getTime();
-            const days = Math.ceil(difference / (1000 * 60 * 60 * 24));
+        <p>
+          직접 만든 작은 게임들을 모아 둔<br>
+          나만의 플레이그라운드.
+        </p>
 
-            let display;
-            if (days > 0) {
-                display = `D-${days}`;
-            } else if (days === 0) {
-                display = "D-DAY";
-            } else {
-                display = `D+${Math.abs(days)}`;
-            }
+        <div class="go">
+          <span>LET'S PLAY</span>
+          <span class="arrow">↗</span>
+        </div>
+      </a>
 
-            document.getElementById("dday-number").textContent = display;
-            document.getElementById("dday-label").textContent = TARGET_NAME;
-        }
+    </nav>
+  </main>
 
-        updateDday();
+  <footer>
+    <span>© EVERAIN · PERSONAL PROJECT</span>
+    <span>MAKE · LEARN · PLAY</span>
+  </footer>
 
-        // 만다라트 목표를 브라우저에 자동 저장
-        const goalCells = document.querySelectorAll(".goal-cell");
-        const STORAGE_KEY = "mandalart-goals-v1";
-
-        // 저장된 목표가 있으면 불러오기
-        try {
-            const savedGoals = JSON.parse(localStorage.getItem(STORAGE_KEY));
-            if (Array.isArray(savedGoals) && savedGoals.length === goalCells.length) {
-                goalCells.forEach((cell, index) => {
-                    cell.textContent = savedGoals[index];
-                });
-            }
-        } catch (error) {
-            console.warn("저장된 목표를 불러오지 못했습니다.", error);
-        }
-
-        // 칸의 글자가 바뀔 때마다 저장
-        function saveGoals() {
-            const goals = Array.from(goalCells, cell => cell.innerText.trim());
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
-            } catch (error) {
-                console.warn("목표를 저장하지 못했습니다.", error);
-            }
-        }
-
-        goalCells.forEach(cell => {
-            cell.addEventListener("input", saveGoals);
-            cell.addEventListener("keydown", event => {
-                // Enter 키로 줄바꿈하지 않고 편집을 마칩니다.
-                if (event.key === "Enter") {
-                    event.preventDefault();
-                    cell.blur();
-                }
-            });
-        });
-    </script>
+</div>
 </body>
 </html>
