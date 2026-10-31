@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -54,8 +55,6 @@ canvas {
     margin-top: 12px;
     font-size: 13px;
     font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 0 0 10px currentColor;
 }
 
 #message {
@@ -68,7 +67,6 @@ canvas {
     font-weight: bold;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.2s;
     z-index: 3;
 }
 
@@ -79,7 +77,7 @@ canvas {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background: rgba(5, 8, 20, 0.85);
+    background: rgba(5, 8, 20, 0.88);
     z-index: 5;
     text-align: center;
     padding: 20px;
@@ -106,11 +104,6 @@ button {
     padding: 15px 45px;
     font-size: 16px;
     font-weight: bold;
-    cursor: pointer;
-}
-
-button:active {
-    transform: scale(0.95);
 }
 
 .hidden {
@@ -135,14 +128,14 @@ button:active {
     <h1 id="title">METEOR<br>DODGE</h1>
 
     <p id="description">
-        떨어지는 운석을 피하세요.<br>
+        떨어지는 운석과 UFO를 피하세요!<br>
         별을 획득하면 특별한 능력을 얻습니다.<br><br>
 
         🟡 노란 별 : +10점<br>
         🟠 주황 별 : 이동 속도 증가<br>
-        🔴 빨간 별 : 무적 및 운석 파괴<br><br>
+        🔴 빨간 별 : 무적 및 장애물 파괴<br><br>
 
-        PC : 방향키 / A, D<br>
+        PC : 방향키 / WASD<br>
         MOBILE : 화면 드래그
     </p>
 
@@ -151,9 +144,9 @@ button:active {
 
 <script>
 
-/* ==============================
+/* =================================
    기본 설정
-============================== */
+================================= */
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -172,33 +165,38 @@ let W, H;
 let running = false;
 
 let score = 0;
+let bonusScore = 0;
 let elapsed = 0;
 
 let lastTime = 0;
+
 let meteorTimer = 0;
 let starTimer = 0;
+let ufoTimer = 0;
 
 let meteors = [];
 let stars = [];
+let ufos = [];
 let particles = [];
-
-let messageTimer = 0;
 
 let speedBoost = 0;
 let invincible = 0;
 
+let messageTimer = 0;
+
 let keys = {
     left: false,
-    right: false
+    right: false,
+    up: false,
+    down: false
 };
 
 
-/* ==============================
+/* =================================
    화면 크기
-============================== */
+================================= */
 
 function resize() {
-
     const dpr = Math.min(
         window.devicePixelRatio || 1,
         2
@@ -213,11 +211,14 @@ function resize() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     if (ship) {
-        ship.y = H - 100;
-
         ship.x = Math.max(
             ship.width / 2,
             Math.min(W - ship.width / 2, ship.x)
+        );
+
+        ship.y = Math.max(
+            H * 0.5,
+            Math.min(H - ship.height / 2, ship.y)
         );
     }
 }
@@ -225,9 +226,9 @@ function resize() {
 window.addEventListener("resize", resize);
 
 
-/* ==============================
+/* =================================
    우주선
-============================== */
+================================= */
 
 const ship = {
     x: 0,
@@ -240,43 +241,33 @@ const ship = {
 };
 
 
-/* ==============================
-   별 배경
-============================== */
+/* =================================
+   배경 별
+================================= */
 
 let backgroundStars = [];
 
 function createStars() {
-
     backgroundStars = [];
 
     for (let i = 0; i < 100; i++) {
-
         backgroundStars.push({
-
             x: Math.random() * W,
             y: Math.random() * H,
-
             size: Math.random() * 2 + 0.5,
-
             speed: Math.random() * 25 + 10
         });
     }
 }
 
-
 function drawStars(dt) {
-
     ctx.fillStyle = "#080b18";
-
     ctx.fillRect(0, 0, W, H);
 
     for (const star of backgroundStars) {
-
         star.y += star.speed * dt;
 
         if (star.y > H) {
-
             star.y = 0;
             star.x = Math.random() * W;
         }
@@ -284,7 +275,6 @@ function drawStars(dt) {
         ctx.fillStyle = "rgba(180,200,255,0.7)";
 
         ctx.beginPath();
-
         ctx.arc(
             star.x,
             star.y,
@@ -292,27 +282,23 @@ function drawStars(dt) {
             0,
             Math.PI * 2
         );
-
         ctx.fill();
     }
 }
 
 
-/* ==============================
+/* =================================
    우주선 그리기
-============================== */
+================================= */
 
 function drawShip() {
-
     ctx.save();
 
     ctx.translate(ship.x, ship.y);
 
-    // 무적 상태 효과
+    // 무적 보호막
     if (invincible > 0) {
-
         ctx.beginPath();
-
         ctx.arc(0, 0, 34, 0, Math.PI * 2);
 
         ctx.fillStyle = "rgba(255,70,70,0.15)";
@@ -331,23 +317,19 @@ function drawShip() {
     ctx.fillStyle = "#ff9d50";
 
     ctx.beginPath();
-
     ctx.moveTo(-7, 16);
     ctx.lineTo(0, 32 + Math.random() * 8);
     ctx.lineTo(7, 16);
-
     ctx.fill();
 
-    // 우주선 본체
+    // 본체
     ctx.fillStyle = "#91b9ff";
 
     ctx.beginPath();
-
     ctx.moveTo(0, -25);
     ctx.lineTo(19, 19);
     ctx.lineTo(0, 12);
     ctx.lineTo(-19, 19);
-
     ctx.closePath();
     ctx.fill();
 
@@ -355,13 +337,7 @@ function drawShip() {
     ctx.fillStyle = "#273c75";
 
     ctx.beginPath();
-
-    ctx.ellipse(
-        0, -5,
-        6, 11,
-        0, 0, Math.PI * 2
-    );
-
+    ctx.ellipse(0, -5, 6, 11, 0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "#d6e5ff";
@@ -371,41 +347,32 @@ function drawShip() {
 }
 
 
-/* ==============================
+/* =================================
    운석 생성
-============================== */
+================================= */
 
 function createMeteor() {
-
     const size = Math.random() * 18 + 15;
 
     meteors.push({
-
         x: Math.random() * (W - size * 2) + size,
-
         y: -size,
-
         radius: size,
-
         speed: 170 + elapsed * 7 + Math.random() * 80,
-
         rotation: Math.random() * Math.PI,
-
         rotationSpeed: (Math.random() - 0.5) * 3
     });
 }
 
 
-/* ==============================
+/* =================================
    운석 그리기
-============================== */
+================================= */
 
 function drawMeteor(meteor, dt) {
-
     meteor.rotation += meteor.rotationSpeed * dt;
 
     ctx.save();
-
     ctx.translate(meteor.x, meteor.y);
     ctx.rotate(meteor.rotation);
 
@@ -413,15 +380,11 @@ function drawMeteor(meteor, dt) {
 
     ctx.beginPath();
 
-    const points = 9;
-
-    for (let i = 0; i < points; i++) {
-
-        const angle = Math.PI * 2 / points * i;
+    for (let i = 0; i < 9; i++) {
+        const angle = Math.PI * 2 / 9 * i;
 
         const radius =
-            meteor.radius *
-            (0.85 + Math.sin(i * 3) * 0.12);
+            meteor.radius * (0.85 + Math.sin(i * 3) * 0.12);
 
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
@@ -447,15 +410,169 @@ function drawMeteor(meteor, dt) {
 }
 
 
-/* ==============================
+/* =================================
+   UFO 생성
+================================= */
+
+function createUFO() {
+
+    // 화면 위쪽의 무작위 위치에서 등장
+
+    const x = Math.random() * (W - 100) + 50;
+
+    const y = -45;
+
+    // 생성 당시 플레이어를 향하는 방향
+    const dx = ship.x - x;
+    const dy = ship.y - y;
+
+    const length = Math.sqrt(dx * dx + dy * dy) || 1;
+
+    ufos.push({
+
+        x: x,
+        y: y,
+
+        radius: 25,
+
+        speed: 190 + elapsed * 2,
+
+        // 추적 상태
+        tracking: true,
+
+        trackingTime: 3,
+
+        // 방향 벡터
+        vx: dx / length,
+        vy: dy / length,
+
+        rotation: 0
+    });
+}
+
+
+/* =================================
+   UFO 그리기
+================================= */
+
+function drawUFO(ufo) {
+
+    ctx.save();
+
+    ctx.translate(ufo.x, ufo.y);
+
+    // 추적 중인 UFO는 붉은 빛
+    if (ufo.tracking) {
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = "#ff5555";
+    } else {
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "#65eaff";
+    }
+
+    // UFO 본체
+    ctx.fillStyle = "#9ba7bc";
+
+    ctx.beginPath();
+
+    ctx.ellipse(0, 5, 27, 10, 0, 0, Math.PI * 2);
+
+    ctx.fill();
+
+    // 윗부분
+    ctx.fillStyle = "#62d9ed";
+
+    ctx.beginPath();
+
+    ctx.ellipse(0, -3, 14, 12, 0, Math.PI, Math.PI * 2);
+
+    ctx.fill();
+
+    // UFO 불빛
+    const colors = ["#ff5555", "#ffe45c", "#5affb0"];
+
+    for (let i = 0; i < 3; i++) {
+
+        ctx.fillStyle = colors[i];
+
+        ctx.beginPath();
+
+        ctx.arc(
+            (i - 1) * 15,
+            7,
+            3,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+
+    ctx.restore();
+
+    // 추적 중임을 나타내는 표시
+    if (ufo.tracking) {
+
+        ctx.save();
+
+        ctx.strokeStyle = "rgba(255,80,80,0.35)";
+        ctx.setLineDash([4, 5]);
+
+        ctx.beginPath();
+
+        ctx.moveTo(ufo.x, ufo.y);
+
+        ctx.lineTo(ship.x, ship.y);
+
+        ctx.stroke();
+
+        ctx.restore();
+    }
+}
+
+
+/* =================================
+   UFO 업데이트
+================================= */
+
+function updateUFO(ufo, dt) {
+
+    if (ufo.tracking) {
+
+        // 플레이어의 현재 위치를 계속 추적
+        const dx = ship.x - ufo.x;
+        const dy = ship.y - ufo.y;
+
+        const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+
+        ufo.vx = dx / distance;
+        ufo.vy = dy / distance;
+
+        // 추적 시간 감소
+        ufo.trackingTime -= dt;
+
+        // 3초가 지나면 방향 고정
+        if (ufo.trackingTime <= 0) {
+            ufo.tracking = false;
+
+            showMessage(
+                "UFO LOCKED ON!",
+                "#65eaff"
+            );
+        }
+    }
+
+    // 고정된 방향으로 이동
+    ufo.x += ufo.vx * ufo.speed * dt;
+    ufo.y += ufo.vy * ufo.speed * dt;
+}
+
+
+/* =================================
    별 아이템 생성
-============================== */
+================================= */
 
 function createPowerStar() {
-
-    // 0 = 노란색
-    // 1 = 주황색
-    // 2 = 빨간색
 
     const random = Math.random();
 
@@ -463,11 +580,9 @@ function createPowerStar() {
 
     if (random < 0.6) {
         type = 0;
-    }
-    else if (random < 0.85) {
+    } else if (random < 0.85) {
         type = 1;
-    }
-    else {
+    } else {
         type = 2;
     }
 
@@ -480,7 +595,6 @@ function createPowerStar() {
     stars.push({
 
         x: Math.random() * (W - 60) + 30,
-
         y: -30,
 
         radius: 13,
@@ -496,9 +610,9 @@ function createPowerStar() {
 }
 
 
-/* ==============================
+/* =================================
    별 그리기
-============================== */
+================================= */
 
 function drawPowerStar(star, dt) {
 
@@ -516,13 +630,11 @@ function drawPowerStar(star, dt) {
 
     ctx.beginPath();
 
-    // 별 모양
     for (let i = 0; i < 10; i++) {
 
         const angle = Math.PI * 2 / 10 * i - Math.PI / 2;
 
-        const radius =
-            i % 2 === 0 ? 15 : 6;
+        const radius = i % 2 === 0 ? 15 : 6;
 
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
@@ -538,9 +650,9 @@ function drawPowerStar(star, dt) {
 }
 
 
-/* ==============================
+/* =================================
    파티클 효과
-============================== */
+================================= */
 
 function createParticles(x, y, color) {
 
@@ -583,13 +695,10 @@ function updateParticles(dt) {
         }
 
         ctx.globalAlpha = p.life / 0.6;
-
         ctx.fillStyle = p.color;
 
         ctx.beginPath();
-
         ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-
         ctx.fill();
 
         ctx.globalAlpha = 1;
@@ -597,9 +706,9 @@ function updateParticles(dt) {
 }
 
 
-/* ==============================
+/* =================================
    충돌 판정
-============================== */
+================================= */
 
 function isColliding(a, b, distance) {
 
@@ -610,9 +719,9 @@ function isColliding(a, b, distance) {
 }
 
 
-/* ==============================
-   아이템 획득
-============================== */
+/* =================================
+   별 아이템 획득
+================================= */
 
 function collectStar(star) {
 
@@ -622,44 +731,30 @@ function collectStar(star) {
         star.color
     );
 
-    // 노란색 별
     if (star.type === 0) {
 
-        score += 10;
+        bonusScore += 10;
 
-        showMessage(
-            "★ +10 BONUS!",
-            "#ffe45c"
-        );
-    }
+        showMessage("+10 BONUS!", "#ffe45c");
 
-    // 주황색 별
-    else if (star.type === 1) {
+    } else if (star.type === 1) {
 
         speedBoost = 5;
 
-        showMessage(
-            "⚡ SPEED UP!",
-            "#ff963c"
-        );
-    }
+        showMessage("SPEED UP!", "#ff963c");
 
-    // 빨간색 별
-    else if (star.type === 2) {
+    } else if (star.type === 2) {
 
         invincible = 5;
 
-        showMessage(
-            "★ INVINCIBLE!",
-            "#ff4242"
-        );
+        showMessage("INVINCIBLE!", "#ff4242");
     }
 }
 
 
-/* ==============================
-   아이템 획득 메시지
-============================== */
+/* =================================
+   메시지
+================================= */
 
 function showMessage(text, color) {
 
@@ -673,55 +768,67 @@ function showMessage(text, color) {
 }
 
 
-/* ==============================
+/* =================================
    키보드 조작
-============================== */
+================================= */
 
 window.addEventListener("keydown", (e) => {
 
-    if (
-        ["ArrowLeft", "ArrowRight", " "].includes(e.key)
-    ) {
+    const key = e.key.toLowerCase();
+
+    if ([
+        "arrowleft",
+        "arrowright",
+        "arrowup",
+        "arrowdown",
+        " "
+    ].includes(key)) {
         e.preventDefault();
     }
 
-    if (
-        e.key === "ArrowLeft" ||
-        e.key.toLowerCase() === "a"
-    ) {
+    if (key === "arrowleft" || key === "a") {
         keys.left = true;
     }
 
-    if (
-        e.key === "ArrowRight" ||
-        e.key.toLowerCase() === "d"
-    ) {
+    if (key === "arrowright" || key === "d") {
         keys.right = true;
+    }
+
+    if (key === "arrowup" || key === "w") {
+        keys.up = true;
+    }
+
+    if (key === "arrowdown" || key === "s") {
+        keys.down = true;
     }
 });
 
 
 window.addEventListener("keyup", (e) => {
 
-    if (
-        e.key === "ArrowLeft" ||
-        e.key.toLowerCase() === "a"
-    ) {
+    const key = e.key.toLowerCase();
+
+    if (key === "arrowleft" || key === "a") {
         keys.left = false;
     }
 
-    if (
-        e.key === "ArrowRight" ||
-        e.key.toLowerCase() === "d"
-    ) {
+    if (key === "arrowright" || key === "d") {
         keys.right = false;
+    }
+
+    if (key === "arrowup" || key === "w") {
+        keys.up = false;
+    }
+
+    if (key === "arrowdown" || key === "s") {
+        keys.down = false;
     }
 });
 
 
-/* ==============================
+/* =================================
    터치 및 마우스 조작
-============================== */
+================================= */
 
 let touching = false;
 
@@ -732,15 +839,22 @@ function moveShip(e) {
     const rect = canvas.getBoundingClientRect();
 
     ship.x = e.clientX - rect.left;
+    ship.y = e.clientY - rect.top;
 
     ship.x = Math.max(
         ship.width / 2,
         Math.min(W - ship.width / 2, ship.x)
     );
+
+    ship.y = Math.max(
+        H * 0.5,
+        Math.min(H - ship.height / 2, ship.y)
+    );
 }
 
-
 canvas.addEventListener("pointerdown", (e) => {
+
+    if (!running) return;
 
     touching = true;
 
@@ -761,20 +875,23 @@ window.addEventListener("pointercancel", () => {
 });
 
 
-/* ==============================
+/* =================================
    게임 초기화
-============================== */
+================================= */
 
 function startGame() {
 
     score = 0;
+    bonusScore = 0;
     elapsed = 0;
 
     meteorTimer = 0;
     starTimer = 0;
+    ufoTimer = 0;
 
     meteors = [];
     stars = [];
+    ufos = [];
     particles = [];
 
     speedBoost = 0;
@@ -785,6 +902,10 @@ function startGame() {
 
     keys.left = false;
     keys.right = false;
+    keys.up = false;
+    keys.down = false;
+
+    touching = false;
 
     running = true;
 
@@ -798,9 +919,9 @@ function startGame() {
 }
 
 
-/* ==============================
+/* =================================
    게임 오버
-============================== */
+================================= */
 
 function endGame() {
 
@@ -811,7 +932,7 @@ function endGame() {
     description.innerHTML =
         `최종 점수 : ${score}점<br><br>` +
         `생존 시간 : ${Math.floor(elapsed)}초<br><br>` +
-        "우주선이 운석에 충돌했습니다!";
+        "우주선이 장애물에 충돌했습니다!";
 
     startBtn.textContent = "다시 시작";
 
@@ -819,9 +940,9 @@ function endGame() {
 }
 
 
-/* ==============================
+/* =================================
    게임 진행
-============================== */
+================================= */
 
 function gameLoop(time) {
 
@@ -835,21 +956,15 @@ function gameLoop(time) {
 
     elapsed += dt;
 
-    // 생존 시간 점수
     score = Math.floor(elapsed) + bonusScore;
 
     drawStars(dt);
 
-    // 능력 지속 시간 감소
-    if (speedBoost > 0) {
-        speedBoost = Math.max(0, speedBoost - dt);
-    }
+    // 능력 시간 감소
+    speedBoost = Math.max(0, speedBoost - dt);
+    invincible = Math.max(0, invincible - dt);
 
-    if (invincible > 0) {
-        invincible = Math.max(0, invincible - dt);
-    }
-
-    // 능력 상태 표시
+    // 능력 표시
     let status = [];
 
     if (speedBoost > 0) {
@@ -860,14 +975,14 @@ function gameLoop(time) {
         status.push("★ INVINCIBLE " + invincible.toFixed(1) + "s");
     }
 
-    statusText.textContent = status.join("  |  ");
+    statusText.textContent = status.join(" | ");
 
     statusText.style.color =
         invincible > 0 ? "#ff5555" :
         speedBoost > 0 ? "#ff963c" :
         "#8291b5";
 
-    // 메시지 시간
+    // 메시지
     if (messageTimer > 0) {
 
         messageTimer -= dt;
@@ -877,24 +992,44 @@ function gameLoop(time) {
         }
     }
 
-    // 키보드 이동
+    // 이동 속도
     const currentSpeed =
-        speedBoost > 0 ? ship.speed * 1.8 : ship.speed;
+        ship.speed * (speedBoost > 0 ? 1.8 : 1);
 
-    if (keys.left) {
-        ship.x -= currentSpeed * dt;
+    // 대각선 이동 속도 보정
+    let mx = 0;
+    let my = 0;
+
+    if (keys.left) mx--;
+    if (keys.right) mx++;
+
+    if (keys.up) my--;
+    if (keys.down) my++;
+
+    const length = Math.sqrt(mx * mx + my * my);
+
+    if (length > 0) {
+        mx /= length;
+        my /= length;
     }
 
-    if (keys.right) {
-        ship.x += currentSpeed * dt;
-    }
+    ship.x += mx * currentSpeed * dt;
+    ship.y += my * currentSpeed * dt;
 
+    // 이동 범위 제한
     ship.x = Math.max(
         ship.width / 2,
         Math.min(W - ship.width / 2, ship.x)
     );
 
-    // 운석 생성
+    ship.y = Math.max(
+        H * 0.5,
+        Math.min(H - ship.height / 2, ship.y)
+    );
+
+
+    /* 운석 생성 */
+
     const spawnInterval = Math.max(
         0.22,
         0.95 - elapsed * 0.012
@@ -903,35 +1038,57 @@ function gameLoop(time) {
     meteorTimer += dt;
 
     if (meteorTimer >= spawnInterval) {
-
         createMeteor();
-
         meteorTimer = 0;
     }
 
-    // 별 생성
+
+    /* 별 생성 */
+
     starTimer += dt;
 
     if (starTimer >= 5 + Math.random() * 4) {
-
         createPowerStar();
-
         starTimer = 0;
     }
 
-    // 운석 업데이트
+
+    /* UFO 생성 */
+
+    ufoTimer += dt;
+
+    const ufoInterval = Math.max(
+        5,
+        12 - elapsed * 0.03
+    );
+
+    if (ufoTimer >= ufoInterval) {
+
+        createUFO();
+
+        ufoTimer = 0;
+    }
+
+
+    /* 운석 업데이트 */
+
     for (let i = meteors.length - 1; i >= 0; i--) {
 
         const meteor = meteors[i];
 
         meteor.y += meteor.speed * dt;
 
-        // 무적 상태라면 운석 파괴
-        if (invincible > 0) {
+        drawMeteor(meteor, dt);
 
-            if (
-                isColliding(meteor, ship, meteor.radius + 22)
-            ) {
+        if (
+            isColliding(
+                meteor,
+                ship,
+                meteor.radius + 15
+            )
+        ) {
+
+            if (invincible > 0) {
 
                 createParticles(
                     meteor.x,
@@ -942,31 +1099,76 @@ function gameLoop(time) {
                 meteors.splice(i, 1);
 
                 continue;
-            }
-        }
 
-        // 일반 충돌
-        else {
-
-            if (
-                isColliding(meteor, ship, meteor.radius + 15)
-            ) {
+            } else {
 
                 endGame();
-
                 return;
             }
         }
 
-        drawMeteor(meteor, dt);
-
         if (meteor.y > H + meteor.radius) {
-
             meteors.splice(i, 1);
         }
     }
 
-    // 별 업데이트
+
+    /* UFO 업데이트 */
+
+    for (let i = ufos.length - 1; i >= 0; i--) {
+
+        const ufo = ufos[i];
+
+        updateUFO(ufo, dt);
+
+        drawUFO(ufo);
+
+        if (
+            isColliding(
+                ufo,
+                ship,
+                ufo.radius + 18
+            )
+        ) {
+
+            if (invincible > 0) {
+
+                createParticles(
+                    ufo.x,
+                    ufo.y,
+                    "#65eaff"
+                );
+
+                ufos.splice(i, 1);
+
+                showMessage(
+                    "UFO DESTROYED!",
+                    "#65eaff"
+                );
+
+                continue;
+
+            } else {
+
+                endGame();
+                return;
+            }
+        }
+
+        // 화면 밖으로 나간 UFO 제거
+        if (
+            ufo.x < -70 ||
+            ufo.x > W + 70 ||
+            ufo.y < -100 ||
+            ufo.y > H + 70
+        ) {
+            ufos.splice(i, 1);
+        }
+    }
+
+
+    /* 별 업데이트 */
+
     for (let i = stars.length - 1; i >= 0; i--) {
 
         const star = stars[i];
@@ -975,9 +1177,12 @@ function gameLoop(time) {
 
         drawPowerStar(star, dt);
 
-        // 우주선과 별 충돌
         if (
-            isColliding(star, ship, star.radius + 20)
+            isColliding(
+                star,
+                ship,
+                star.radius + 20
+            )
         ) {
 
             collectStar(star);
@@ -987,62 +1192,45 @@ function gameLoop(time) {
             continue;
         }
 
-        // 화면 밖으로 나간 별 제거
         if (star.y > H + 30) {
-
             stars.splice(i, 1);
         }
     }
 
-    // 파티클
+
+    /* 파티클 */
+
     updateParticles(dt);
 
-    // 우주선
+
+    /* 우주선 */
+
     drawShip();
 
-    // 점수
+
+    /* 점수 */
+
     scoreText.textContent = score;
 
     requestAnimationFrame(gameLoop);
 }
 
 
-/* ==============================
-   보너스 점수
-============================== */
-
-let bonusScore = 0;
-
-// 노란 별 획득 시 보너스 점수 누적
-const originalCollectStar = collectStar;
-
-collectStar = function(star) {
-
-    if (star.type === 0) {
-        bonusScore += 10;
-    }
-
-    originalCollectStar(star);
-};
-
-
-/* ==============================
+/* =================================
    시작 버튼
-============================== */
+================================= */
 
 startBtn.addEventListener("click", () => {
 
     titleText.innerHTML = "METEOR<br>DODGE";
 
-    bonusScore = 0;
-
     startGame();
 });
 
 
-/* ==============================
+/* =================================
    최초 실행
-============================== */
+================================= */
 
 resize();
 
